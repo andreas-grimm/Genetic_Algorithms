@@ -13,34 +13,34 @@
 void GA_Ordnung_Initial()
   {
   int x;
-  for (x = O; x < MaxWesen; x++)
-    Ordnungszahl = O;
+  for (x = 0; x < MaxWesen; x++)
+    Ordnungszahl[x] = 0;
   }
 
 void GA_Ordnung_Feststellen(Wesen)
 int Wesen;
   {
   int x, y;
-  for (x =  O; x < MaxKnoten; x++)
-    for (y = O; y < MaxKnoten; y++)
+  for (x =  0; x < MaxKnoten; x++)
+    for (y = 0; y < MaxKnoten; y++)
       {
       if ((Individuum[x][y][Wesen] == 1) && (x < y))
         Ordnungszahl[Wesen]++;
       if ((Individuum[x][y][Wesen] == 1) && (x > y))
         {
-        Ordnungszahl[Wesen]—-;
+        Ordnungszahl[Wesen]--;
         if (Korrektur_Ordnung == WAHR)
-          Individuum[x][y][Wesen] = O;
+          Individuum[x][y][Wesen] = 0;
         }
       }
-    if (Ordnungszahl[Wesen] < O)
-      Ordnungszahl[Wesen] = O;
+    if (Ordnungszahl[Wesen] < 0)
+      Ordnungszahl[Wesen] = 0;
   }
 
 void GA_Ordnung_main()
   {
   int x;
   GA_Ordnung_Initial();
-  for (x = O; x < MaxWesen; x++)
+  for (x = 0; x < MaxWesen; x++)
     GA_Ordnung_Feststellen(x);
   }

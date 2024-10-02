@@ -8,6 +8,9 @@
 /*                                             */
 /*---------------------------------------------*/
 
+#ifndef GENETICS_H
+#define GENETICS_H
+
 /* Standardincludes */
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -20,6 +23,7 @@
 #include <Xm/PushB.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <curses.h>
 
 /* Globale Fegtlegungen */
@@ -36,7 +40,7 @@
 #define      MITTEL              1
 #define      SCHLECHT            2
 
-#define      FIRST-TIME          0
+#define      FIRST_TIME          0
 #define      NORMAL_USE          1
 #define      LAST_TIME           2
 #define      FEHLER              3
@@ -45,7 +49,7 @@
 #define      TIEFEYSUCHE         1
 #define      ARIADNE             2
 
-#define      MarNachfolger       2
+#define      MaxNachfolger       2
 #define      MaxIndividuen       50
 #define      MaxIndividuenHalbe  25
 
@@ -55,7 +59,8 @@ int          MaxGeneration;
 int          MaxKnoten;
 int          MaxWesen;
 int          MaxWesenHalbe;
-long float   M_Wahrschein;
+float        M_Wahrschein;
+float        Fit_Verteil;
 
 /* Definitionen fuer den Zufallggenerator */
 long         Zufa11_r[97];
@@ -76,21 +81,23 @@ unsigned int FS_Hoehe, FS_Breite, Org_FS_Hoehe, Org_FS_Breite;
 
 /* Daten fuer das Baum—Fenster */
 unsigned int FB_Hoehe, FB_Breite, Org_FB_Hoehe, Org_FB_Breite;
-int          FB—aktiv; 
+int          FB_aktiv; 
 
 /* Daten fuer den besten Baum */
-unsigned int FbB_Hoehe, FbB—Breite, Org_FbB_Hoehe, Org_FbB_Breite;
-unsigned int border_width, display—width, display-height;
-int          windov_size;
+unsigned int FbB_Hoehe, FbB_Breite, Org_FbB_Hoehe, Org_FbB_Breite;
+unsigned int border_width, display_width, display_height;
+int          window_size;
 
 short        Generation, Programmende;
 int          GesamtFitness, Beste_Fitness, Best_Wesen;
-int          Korrektur—Ordnung, Korrektur_Topologie;
+int          Korrektur_Ordnung, Korrektur_Topologie;
 
 int          Individuum[100][100][MaxIndividuen];
 int          Root[MaxIndividuen];
-int          Tiefe[100][NaxIndividuen], Beste_Tiefe[100];
-int          Fitness [Maxlndividuen];
+int          Tiefe[100][MaxIndividuen], Beste_Tiefe[100];
+int          Fitness[MaxIndividuen];
 int          Statistik[100][3];
-int          Best-Individuum[100][100];
+int          Best_Individuum[100][100];
 int          Ordnungszahl[MaxIndividuen];
+
+#endif

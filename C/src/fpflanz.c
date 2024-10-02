@@ -7,102 +7,103 @@
 /*                                             */
 /*---------------------------------------------*/
 #include "genetics.h"
+#include "zufall.h"
 
 void GA_Fpflanz_Roulette()
   {
-  int Wheel[IOO], Prozent, t, u, x, y = O, z;
-  int Neu_Individuum[IOO][IOO][Maxlndividuen];
+  int Wheel[100], Prozent, t, u, x, y = 0, z;
+  int Neu_Individuum[100][100][MaxIndividuen];
 /* Vorbereiten des Roulette— Rades */
-  for (x = O; x < MaxWesen; x++)
+  for (x = 0; x < MaxWesen; x++)
     {
     Prozent = (int)(((float)Fitness[x] / (float)GesamtFitness) * 100) ;
-    for (z = O; z < Prozent; z++)
+    for (z = 0; z < Prozent; z++)
       Wheel[y++] = x;
     }
 /* Werfen des Roulette— Rades */
-  for (x = O; x < MaxWesen; x++)
+  for (x = 0; x < MaxWesen; x++)
     {
     z = GA_Zufall_main() % y;
-    for (t = O; t < MaxKnoten; t++)
-      for (u = O; u < maxKnoten; u++)
-        Neu_lndividuum[t][u][x] = Individuum[t][u][Wheel[z]];
+    for (t = 0; t < MaxKnoten; t++)
+      for (u = 0; u < MaxKnoten; u++)
+        Neu_Individuum[t][u][x] = Individuum[t][u][Wheel[z]];
     }    
 /* Uebertragen der Ergebnisse */
 /* Ohno Generation Gapping
-  for (x = O; x < MaxWesen; x++) */
+  for (x = 0; x < MaxWesen; x++) */
 /* Mit Generation Gapping */
-  for (t = O; t < MaxKnoten; t++)
-    for (u = O; u < MaxKnoten,• u++)
+  for (t = 0; t < MaxKnoten; t++)
+    for (u = 0; u < MaxKnoten; u++)
       Individuum[t][u][0] = Individuum[t][u][Best_Wesen];
-  for (x = i; x < MaxWesen; x++)
-    for (t = O; t < MaxKnoten; t++)
-      for (u = O; u < MaxKnoten; u++)
+  for (x = 1; x < MaxWesen; x++)
+    for (t = 0; t < MaxKnoten; t++)
+      for (u = 0; u < MaxKnoten; u++)
         Individuum[t][u][x] = Neu_Individuum[t][u][x];
   }
 
 void GA_FpfIanz_Paarung()
   {
-  int Paare[MaxIndividuenHa1be], t, u, x, y = O, z, Besetzt;
-  int Neu—lndividuum[100][100][Maxlndividuen];
-  for (x = O; x < MaxWesenHalbe; x++)
+  int Paare[MaxIndividuenHalbe], t, u, x, y = 0, z, Besetzt;
+  int Neu_Individuum[100][100][MaxIndividuen];
+  for (x = 0; x < MaxWesenHalbe; x++)
     Paare[x] = MaxWesen;
-  for (x = O; x < MaxWesenHa1be; x++)
+  for (x = 0; x < MaxWesenHalbe; x++)
     {
     t = (GA_Zufall_main() % MaxWesenHalbe) + MaxWesenHalbe;
     do {
       Besetzt = FALSCH;
-      for (y = O; y < x; y++)
+      for (y = 0; y < x; y++)
         if (Paare[y] == t)
           {
           Besetzt = WAHR;
-          t = (GA_Zufall_main() % MaxWesenHalbe) + MaxWesenHa1be;
+          t = (GA_Zufall_main() % MaxWesenHalbe) + MaxWesenHalbe;
           }
       } while (Besetzt == WAHR);
     Paare[x] = t;
     }
-  for (x = O; x < MaxWesenHalbe; x++)
+  for (x = 0; x < MaxWesenHalbe; x++)
     {
-    for (y = O; y < MaxKnoten; y++)
-      for (z = O; z < MaxKnoten; z++)
+    for (y = 0; y < MaxKnoten; y++)
+      for (z = 0; z < MaxKnoten; z++)
         {
-        Neu_Individuum[y][z][x] = Individuun[y][z][x];
+        Neu_Individuum[y][z][x] = Individuum[y][z][x];
         Neu_Individuum[y][z][Paare[x]] = Individuum[y][z][Paare[x]];
         }
     t = GA_Zufall_main() % MaxKnoten;
     u = GA_Zufall_main() % MaxKnoten;
-    for (y = O; y < t; y++)
-      for (z = O; z < u; z++)
+    for (y = 0; y < t; y++)
+      for (z = 0; z < u; z++)
         {
         Neu_Individuum[y][z][x] = Individuum[y][z][Paare[x]] ;
-        Neu_Individuun[y][z][Paare[x]] = Individuum[y][z][x];
+        Neu_Individuum[y][z][Paare[x]] = Individuum[y][z][x];
         }
     for (y = t; y < MaxKnoten; y++)
-      for (z = O; z < MaxKnoten; z++)
+      for (z = 0; z < MaxKnoten; z++)
         {
-        Neu_Individuum[y][z][x] = Individuun[y][z][Paare[x]] ;
+        Neu_Individuum[y][z][x] = Individuum[y][z][Paare[x]] ;
         Neu_Individuum[y][z][Paare[x]] = Individuum[y][z][x] ;
         }
     }
 /* Uebertragen der Ergebnisse */
-  for (x O; x < MaxWesen; x++)
+  for (x = 0; x < MaxWesen; x++)
     for (y = 0; y < MaxKnoten; y++)
-      for (z = O; z < MaxKnoten; z++)
-        Individuum[y][z][x] = Neu_lndividuum[y][z][x];
+      for (z = 0; z < MaxKnoten; z++)
+        Individuum[y][z][x] = Neu_Individuum[y][z][x];
   }
 
 void GA_Fpflanz_Mutation()
   {
-  long float Elemente;
+  float Elemente;
   int Nr, x, y, z;
   Elemente = MaxKnoten * MaxKnoten * MaxWesen;
   Elemente *= M_Wahrschein;
-  if (Elemente > O)
-    for (Nr = O; Nr < Elements; Nr++)
+  if (Elemente > 0)
+    for (Nr = 0; Nr < Elemente; Nr++)
       {
       x = GA_Zufall_main() % MaxKnoten;
-      y = GA_Zufall_main() % NaxKnoten;
+      y = GA_Zufall_main() % MaxKnoten;
       z = GA_Zufa11_main() % MaxWesen;
-      if (Individuum[x][y][z] == O)
+      if (Individuum[x][y][z] == 0)
         Individuum[x][y][z] = 1;
       else
         Individuum[x][y][z] = 0;

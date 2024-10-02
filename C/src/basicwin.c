@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 int screen_num;
-char *progname = "genetic";
+char *progname = "genetic\0";
 
 void GA_Basicwin_Initialisierung_Fenster_Statistik()
   {
@@ -39,9 +39,9 @@ void GA_Basicwin_Initialisierung_Fenster_Statistik()
   Org_FS_Breite= FS_Breite;
 
 /* Aufbau eines einzelnen Fensters entsprechend den Voreinstellungen */
-  F_Statistik XCreateSimpleWindow(display, RootWindow(dispIay, screen_num),
+  F_Statistik =  XCreateSimpleWindow(display, RootWindow(display, screen_num),
          x, y, FS_Hoehe, FS_Breite, border_width, BlackPixel(display, 
-         screen_nun), WhitePixel(display, screen_num));
+         screen_num), WhitePixel(display, screen_num));
 
   XGetIconSizes(display, RootWindow(display, screen_num), &size_list,
                 &count);
@@ -53,14 +53,14 @@ void GA_Basicwin_Initialisierung_Fenster_Statistik()
   Statistik_Size.width = FS_Breite;
   Statistik_Size.height = FS_Hoehe;
   Statistik_Size.min_width = 300;
-  Statistik—Size.min_height = 200;
+  Statistik_Size.min_height = 200;
 
   XSetStandardProperties (display, F_Statistik, FS_name, FS_icon,
-       icon_pixmap, progname, O, &Statistik_Size);
+       icon_pixmap, &progname, 0, &Statistik_Size);
   XSelectInput (display, F_Statistik, ExposureMask | ButtonPressMask | StructureNotifyMask);
 
   GA_Basicwin_erzeuge_Grafik_Umgebung(F_Statistik, &FS_Grafik, font_info);
-  XMapWindow(disp1ay, F_Statistik);
+  XMapWindow(display, F_Statistik);
 }
 
 void GA_Basicwin_Initialisierung_Fenster_Baum()
@@ -84,9 +84,9 @@ void GA_Basicwin_Initialisierung_Fenster_Baum()
   FB_Breite = MaxWesen * 10;
 
 /* Aufbau eines einzelnen Fensters entsprechend den Voreinstellungen */
-  F_Baum = XCreateSimp1eWindow(display, RootWindow(display,screen_num),
-           x, y, FB_Hoehe, FB_Breite, border_width, BlackPixe1(display,
-           screen_num), WhitePixe1(display, screen_num));
+  F_Baum = XCreateSimpleWindow(display, RootWindow(display,screen_num),
+           x, y, FB_Hoehe, FB_Breite, border_width, BlackPixel(display,
+           screen_num), WhitePixel(display, screen_num));
 
   XGetIconSizes (display, RootWindow (display, screen_num), &size_list,
            &count);
@@ -100,7 +100,7 @@ void GA_Basicwin_Initialisierung_Fenster_Baum()
   Baum_Size.min_height = 200;
 
   XSetStandardProperties (display, F_Baum, FB_name, FB_icon,
-      icon_pixmap, progname, 0, &Baum_Size);
+      icon_pixmap, &progname, 0, &Baum_Size);
   XSelectInput (display, F_Baum, ExposureMask | ButtonPressMask | StructureNotifyMask);
 
   GA_Basicwin_erzeuge_Grafik_Umgebung(F_Baum, &FB_Grafik, font_info);
@@ -116,21 +116,21 @@ void GA_Basicwin_Initialisierung_Fenster_Baum()
     Pixmap icon_pixmap;
     int count;
 
-    window_size = O;
+    window_size = 0;
     border_width = 4;
 
 /* Uebernahme der Groesse des Bildschirmes aus den Systemdaten */
     screen_num = DefaultScreen(display);
-    display_width = DisplayWidth(disp1ay, screen_num);
+    display_width = DisplayWidth(display, screen_num);
     display_height= DisplayHeight(display, screen_num);
 
-    x = y =0;
+    x = y = 0;
 
     FbB_Hoehe = MaxWesen * 10;
     FbB_Breite = MaxWesen * 10;
 
 /* Aufbau eines einzelnen Fensters entsprechend den Voreinstellungen */
-    Fb_Baum = XCreateSimp1eWindow(disp1ay, RootWindow(display, screen_num),
+    Fb_Baum = XCreateSimpleWindow(display, RootWindow(display, screen_num),
             x, y, FbB_Hoehe, FbB_Breite, border_width, BlackPixel(display, 
             screen_num), WhitePixel (display, screen_num));
 
@@ -140,7 +140,7 @@ void GA_Basicwin_Initialisierung_Fenster_Baum()
     Baum_Size.flags = PPosition | PSize | PMinSize;
     Baum_Size.x = x;
     Baum_Size.y = y;
-    Baum_Size.vidth = FbB_Breite;
+    Baum_Size.width = FbB_Breite;
     Baum_Size.height = FbB_Hoehe;
     Baum_Size.min_width = 300;
     Baum_Size.min_height = 200;
@@ -149,24 +149,24 @@ void GA_Basicwin_Initialisierung_Fenster_Baum()
     XSelectInput(display, Fb_Baum, ExposureMask | ButtonPressMask | StructureNotifyMask);
 
     GA_Basicwin_erzeuge_Grafik_Umgebung(Fb_Baum, &FbB_Grafik, font_info);
-    XMapWindow(digplay, Fb_Baum);
+    XMapWindow(display, Fb_Baum);
  }
 
 void GA_Basicwin_erzeuge_Grafik_Umgebung(Fenster, Grafik_Umgebung, font_info)
 Window Fenster;
-GC *Grafik_Ungebung;
+GC *Grafik_Umgebung;
 XFontStruct *font_info;
 {
-  unsigned long valuemask = O;
-  XGCVa1ues values;
+  unsigned long valuemask = 0;
+  XGCValues values;
   unsigned int line_width = 0;
-  int line_style = LineSo1id;
+  int line_style = LineSolid;
   int cap_style = CapButt;
   int join_style = JoinRound;
 
   *Grafik_Umgebung = XCreateGC(display, Fenster, valuemask, &values);
   XSetFont(display, *Grafik_Umgebung, font_info->fid);
-  XSetLineAttributeg(display, *Grafik_Umgebung, line_vidth, line_style,
+  XSetLineAttributes(display, *Grafik_Umgebung, line_width, line_style,
                      cap_style, join_style);
 }
 
@@ -199,14 +199,14 @@ void GA_Basicwin_Initia1isierung_Gra1ik()
 
   XDrawLine(display,F_Statistik,FS_Grafik, 30, 0, 30, FS_Hoehe) ;
   XDrawLine(display, F_Statistik, FS_Grafik, 0, (FS_Hoehe -30), 
-            FS_Breite, (FS—Hoehe — 30));
+            FS_Breite, (FS_Hoehe - 30));
   for (x = 30; x < FS_Breite; x += (5 * Dehnungsfaktor_X))
       XDrawLine(display, F_Statistik, FS_Grafik, x, (FS_Hoehe - 30), x, (FS_Hoehe - 25));
   for (x = 30; x < FS_Breite; x += (50 * Dehnungsfaktor_X))
       XDrawLine(display, F_Statistik, FS_Grafik, x, (FS_Hoehe - 30), x, (FS_Hoehe - 20));
-  for (x = (FS_Hoehe - 30); x > 0, x-= (5 * Dehnungsfaktor_Y))
+  for (x = (FS_Hoehe - 30); x > 0; x-= (5 * Dehnungsfaktor_Y))
       XDrawLine(display, F_Statistik, FS_Grafik, 25, x, 30, x);
-  for (x = (FS_Hoehe - 30); x > 0, x-= (50 * Dehnungsfaktor_Y))
+  for (x = (FS_Hoehe - 30); x > 0; x-= (50 * Dehnungsfaktor_Y))
       XDrawLine(display, F_Statistik, FS_Grafik, 20, x, 30, x);
   XDrawString(display, F_Statistik, FS_Grafik,
       30 + (10 * Dehnungsfaktor_X), FS_Hoehe -15,

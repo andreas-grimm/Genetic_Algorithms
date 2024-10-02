@@ -8,8 +8,9 @@
 /*---------------------------------------------*/
 #include <curses.h>
 #include "domenu.h"
+#include <string.h>
 
-GA_domenu_isblank(s)
+int GA_domenu_isblank(s)
 char *s;
 {
     while(*s == ' ')
@@ -18,7 +19,7 @@ char *s;
     return *s == '\0' ? 1: 0;
 }
 
-GA_domenu_main(m)
+int GA_domenu_main(m)
 struct menu *m;
 {
 
@@ -37,7 +38,7 @@ struct menu *m;
   keypad (stdscr , TRUE) ;
 
   /* print centred title on line one */
-  move(0, (COLS — strlen(m->m_title))/2);
+  move(0, (COLS - strlen(m->m_title))/2);
   addstr(m->m_title);
 
   /* work out position for top left corner of nenu */
@@ -46,7 +47,7 @@ struct menu *m;
 
   /* display menu */
   for (j = 0; j < m->m_height; j++)
-    mvaddstr( y+j, x, m->data[j]);
+    mvaddstr( y+j, x, m->m_data[j]);
 
   /* initial values for cursor pos. and option setting */
   move( y, x);
@@ -88,18 +89,18 @@ struct menu *m;
         case KEY_DOWN:            /* move current down, if possible */
         case KEY_RIGHT:           /* or wrap around */
             do {
-               option = (++option < m—>m_height) ? option : 0;
-            } while (GA_domenu_isblank(m->m_data[option]))
+               option = (++option < m->m_height) ? option : 0;
+            } while (GA_domenu_isblank(m->m_data[option]));
             break;
 
         case KEY_UP:              /* move current line up or wrap */
         case KEY_LEFT:            /* around */
           do {
-             option = (--option >= 0) ? option : m—>m_height - 1;
+             option = (--option >= 0) ? option : m->m_height - 1;
           } while (GA_domenu_isblank(m->m_data[option]));
 
         default:
-          for (j = 0; j < m—>m_height; j++) {
+          for (j = 0; j < m->m_height; j++) {
             for (p = m->m_data[j]; *p == ' '; p++)
               ;
             if ( *p == '\0')      /* blank line */

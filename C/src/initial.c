@@ -10,19 +10,20 @@
 
 #include <stdio.h>
 #include "genetics.h"
+#include "zufall.h"
 
 /* ein Element ist genau daan Blatt, wenn es nur Vorgaenger hat */
 int GA_Initial_ist_Blatt(Wurzel, Wesen)
 int Wurzel, Wesen;
   {
-  int x, sum = O;
-  for (x = O; x < MaxKnoten; x++)
-    sum = sum + Individuum[Wurze1][x][Wesen];
+  int x, sum = 0;
+  for (x = 0; x < MaxKnoten; x++)
+    sum = sum + Individuum[Wurzel][x][Wesen];
   if (sum == 0)
     {
-    for (x = O; x < MaxKnoten; x++)
+    for (x = 0; x < MaxKnoten; x++)
       sum = sum + Individuum[x][ Wurzel][Wesen];
-    if (sum != O)
+    if (sum != 0)
       return (WAHR);
     }
   return (FALSCH) ;
@@ -30,14 +31,14 @@ int Wurzel, Wesen;
 
 /* ein Element igt genau dann Wurzel, wenn es keine Yachfolger hat */
 int GA_Initial_ist_Wurzel(Nachfolger,Wesen)
-int Nachfolgør, Wesøn;
+int Nachfolger, Wesen;
   {
   int x, sum = 0;
-  for (x = O; x < MaxKnoten; x++)
+  for (x = 0; x < MaxKnoten; x++)
     {
     sum = sum + Individuum[x][Nachfolger][Wesen];
     }
-  if (sum == O)
+  if (sum == 0)
     return (WAHR);
   else
     return (FALSCH);
@@ -55,7 +56,7 @@ int Wesen;
     if (sum == 0)
       return(WAHR);
     else
-      sum = O;
+      sum = 0;
     }
   return (FALSCH);
   }
@@ -63,7 +64,7 @@ int Wesen;
 void GA_Initial_Baue_Baum(Wesen)
 int Wesen;
   {
-  int Wurzel, Nachfolgør, x;
+  int Wurzel, Nachfolger, x;
 /* Suche eine Wurzel */
   Wurzel = GA_Zufall_main() % MaxKnoten;
   Root[Wesen] = Wurzel;
@@ -73,9 +74,9 @@ int Wesen;
   do {
 /* Suche Nachfolger entsprechend eingestellter Rang */
     Nachfolger = Wurzel;
-    for (x = O; x < MaxNachfolger•, x++)
+    for (x = 0; x < MaxNachfolger; x++)
       {
-      while ((Yachfolger == Wurzel) ||
+      while ((Nachfolger == Wurzel) ||
              (GA_Initial_ist_Wurzel(Nachfolger , Wesen) == FALSCH))
         Nachfolger = GA_Zufall_main() % MaxKnoten;
       if (Root[Wesen] != Nachfolger)
@@ -93,22 +94,22 @@ int Wesen;
 /* TESTLAUF
     printf("Neue Wurzel: %i \n",Wurzel);
 */
-    } while (GA_initial_ist_freies_Element(Wesen) == WAHR);
+    } while (GA_Initial_ist_freies_Element(Wesen) == WAHR);
   }
 
 void GA_Initial_Wesen()
   {
   int x, y, z;
 /* Vorinitiaiißierung der Individuen */
-  Beste_Fitness = O;
-  for (z = O; z < MaxWesen; z++)
+  Beste_Fitness = 0;
+  for (z = 0; z < MaxWesen; z++)
     {
-    for (x = O; x < MaxKnoten; x++)
-      for (y = O; y < MaxKnoten; y++)
-        Individuum[x] = O;
+    for (x = 0; x < MaxKnoten; x++)
+      for (y = 0; y < MaxKnoten; y++)
+        Individuum[x][y][z] = 0;
     }
 /* Aufbau der Baeume */
-  for (z = O; z < MaxWesen; z++)
+  for (z = 0; z < MaxWesen; z++)
     {
     GA_Initial_Baue_Baum(z);
 /* Testausgabe der erzeugten Baeume

@@ -6,15 +6,15 @@
 /* Datum : 31 . August 1991                    */                           
 /*                                             */                           
 /*---------------------------------------------*/                           
-
 #include <stdio.h>
 #include "genetics.h"
+#include "zeige_baum.h"
 
 int GA_Bewert_addiere_Tiefe(Wesen)
 int Wesen;
   {
-  int x, sum = O;
-  for (x = O; x < MaxKnoten; x++)
+  int x, sum = 0;
+  for (x = 0; x < MaxKnoten; x++)
     sum += Tiefe[x][Wesen];
   return(sum);
   }
@@ -22,15 +22,15 @@ int Wesen;
 int GA_Bewert_bewertete_Tiefe(Wesen)
 int Wesen;
   {
-  int x, sum = O;
-  for (x = O; x < HaxKnoten; x++)
-    sum += MaxKnoten + 1 — Tiefe[x][Wesen];
+  int x, sum = 0;
+  for (x = 0; x < MaxKnoten; x++)
+    sum += MaxKnoten + 1 - Tiefe[x][Wesen];
   return(sum);
   }
 
 int GA_Bewert_MaxOrdnung()
   {
-  int x= O, sum = O, y = O;
+  int x= 0, sum = 0, y = 0;
   for (y = 0; y < MaxKnoten; y++)
     for (x = y; x < MaxKnoten; x++)
       sum++ ;
@@ -42,48 +42,48 @@ void GA_Bewert_nain()
   /* OGF — optimale Gesamtfitnesg
      OEF - optimale Einzeliitness
      PGF — Prozent der Gesamtfitness */
-  int x, y, z, OGF = O, OEF = 400, MaxWert = 0;
-  int BaumFoerderung = O, Bester_Baum = O;
+  int x, y, z, OGF = 0, OEF = 400, MaxWert = 0;
+  int BaumFoerderung = 0, Bester_Baum = 0;
   int MinWert;
-  double Prozent, PGF, q=1, p = O, PMaxWert, PMinWert;
-  float TopologischeFitness, OrdnungsFitness, OEFI, OEF2;
-  GesamtFitness = O;
+  double Prozent, PGF, q=1, p = 0, PMaxWert, PMinWert;
+  float TopologischeFitness, OrdnungsFitness, OEF1, OEF2;
+  GesamtFitness = 0;
 
-  OEF1 = (float)((MaxKnoten * MaxKnoten) + BaunFoerderung) ;
+  OEF1 = (float)((MaxKnoten * MaxKnoten) + BaumFoerderung) ;
   OEF2 = (float)(GA_Bewert_MaxOrdnung());
   OGF = OEF * MaxWesen;
   MinWert = OEF;
-  for (x = O; x < Naxgesen; *++)
+  for (x = 0; x < MaxWesen; x++)
     {
 /* Fitnessfunktion Mittlere Weglaenge */
-    if (Root[x] < MaxWegen + 1)
-      TopologischeFitness = TopologischeFitnøss + BaumFoerderung;
+    if (Root[x] < MaxWesen + 1)
+      TopologischeFitness = TopologischeFitness + BaumFoerderung;
     if (Root[x] !=  MaxWesen + 1)
       TopologischeFitness = (int)((OEF1 - GA_Bewert_addiere_Tiefe(x)) * q +
-                               (OEFI — GA_Bewert_bewertete_Tiefe(x)) * p);
+                               (OEF1 - GA_Bewert_bewertete_Tiefe(x)) * p);
     else
-      TopologischeFitness = O;
+      TopologischeFitness = 0;
 /* Fitnessfunction Ordnung */
   OrdnungsFitness = Ordnungszahl[x];
-  if ((OrdnungBFitnegB < O) || (OrdnunggFitness > OEF2))
-    OrdnungsFitness = O;
+  if ((OrdnungsFitness < 0) || (OrdnungsFitness > OEF2))
+    OrdnungsFitness = 0;
 /* Skalieren und addieren der Fitnesgwerte */
   TopologischeFitness = (TopologischeFitness / OEF1) * 400;
   OrdnungsFitness = (OrdnungsFitness / OEF2) * 400;
   Fitness[x] = (int)(Fit_Verteil * TopologischeFitness + (1 - Fit_Verteil) * OrdnungsFitness);
   GesamtFitness += Fitness[x];
-  if (Fitness[x] > Begte_Fitnese)
+  if (Fitness[x] > Beste_Fitness)
     {
     Best_Wesen = x;
     Beste_Fitness =  Fitness[x] ;
-    for (y = O; y < MaxKnoten; y++)
-      for (z = O; z < MaxKnoten; z++)
+    for (y = 0; y < MaxKnoten; y++)
+      for (z = 0; z < MaxKnoten; z++)
         Best_Individuum[y][z] = Individuum[y][z][x];
-    for (y = O; y < MaxKnoten•, y++)
-      Beste_Tiefe[y] = Tiefe[y];
+    for (y = 0; y < MaxKnoten; y++)
+      Beste_Tiefe[y] = Tiefe[y][x];
     GA_Zeige_Baum_Zeichne_Baum();
     }
-  if (Fitness[x] > NaxWert)
+  if (Fitness[x] > MaxWert)
     {
     MaxWert = Fitness[z];
     Bester_Baum = x;
@@ -98,8 +98,8 @@ void GA_Bewert_nain()
   PGF = (float)GesamtFitness / (float)OGF * 100;
   PMinWert = ((float)MinWert / (float)GesamtFitness) * 100;
   PMaxWert = ((float)MaxWert / (float)GesamtFitness) * 100;
-  GA-Benutz-Statugausgabe(Generation, OGF, GesamtFitness, PGF,
-                          Beste_Fitness, NaxWert, MinWert, PMaxWert,
+  GA_Benutz_Statugausgabe(Generation, OGF, GesamtFitness, PGF,
+                          Beste_Fitness, MaxWert, MinWert, PMaxWert,
                           PMinWert);
 /* Ausgabe ohne Curses */
   if (NoCurses = WAHR)
@@ -108,11 +108,11 @@ void GA_Bewert_nain()
     printf("Genøration : %i \n", Generation) ;
     printf("Auswertung der Baeume :\n") ;
     printf(" Optimale Werte : \n");
-    printf(" Gesamtfitness (topologiscb): %i, Einzelfitness: %i ,OGF, OEF)";
+    printf(" Gesamtfitness (topologiscb): %i, Einzelfitness: %i",OGF, OEF);
     printf(" erreichte Fitness: %i\n", Beste_Fitness);
-    printf(" Gesamtfitness (topologisch): %i —— %2.2f v.H.\n", Gesamtfitness, PGF);
+    printf(" Gesamtfitness (topologisch): %i —— %2.2f v.H.\n", GesamtFitness, PGF);
     printf("Einzelwerte : \n");
-    for (x = O; x < MaxWesen; x++)
+    for (x = 0; x < MaxWesen; x++)
       {
       Prozent = ((float)Fitness[x] / (float)GesamtFitness) * 100;
       printf(" Wesen %2i : Fitness = %i -- %2.2f v.H. \n", x, Fitness[x], Prozent) ;
