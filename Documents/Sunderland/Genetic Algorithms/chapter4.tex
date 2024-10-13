@@ -1,0 +1,404 @@
+\label{chap4beg}
+In this chapter I want to demonstrate the use of the advanced genetic algorithms.
+For this I use a well known problem of the copmuter science, the traveling salesman
+problem. This is a very good example of an $\cal{NP}$-complete problem\cite{Hop88}.
+This kind of problems cannot be solved by computer algorithms if the size of the
+problem exceeds a certain number, because the number of calculations necessary
+to solve these problems are growing by an exponential factor. Another example
+of this class of functions is the Ackermann- function.
+
+An interesting fact in the history of genetic algorithms is that in the first
+years the researchers believed they could solve this kind of problems. So some
+experiments were made, with the result that all attempts failed which means
+that the computer calculate a nearly infinity time to get the result or that
+the size of the population is so big that the result is automaticly a member
+of the population.
+
+There are different solutions using other methods but none of them can ignore
+the fact that they will fail if the size is big enough.
+
+The following program is not another try to solve this problem, but a demonstration
+how to formulate a more complex problem as a genetic algorithm. For this I first
+have a little revision on the problem itself.
+\section{The Traveling Salesman}
+A travelling salesman has to travel to a number of towns in order to sell his
+goods to the local shops. For this it is important for him to enter each town
+one time and to keep the distances between the different towns as small as possible.
+Also he does not want to enter the same town a second time.
+
+There are different strategies to solve that problem.
+\begin{enumerate}
+  \item Calculate all possible routes and choose the shortest. This means that
+  the computer has to work on a huge number of possibilities. Using elementary
+  statistics it is simple to prove that the computer has to calculate $n!$ different
+  routes. So for 5 towns there are 120 different routes, but for 25 towns he
+  has to calculate $1.55 \cdot 10^{25}$ different routes. I assume the user
+  has a very quick computer which can calculate 10 routes a second this number
+  means that the computer will have to work for approx. $5 \cdot 10^{16}$ years.
+  If this imaginary computer would exist at the beginning of the universe it would
+  be possible to get the results in some billion years. But raising the number of
+  towns by ten the computer will work longer than this universe will exist.
+  \item Using a simple hill-climbing algorithm. This method produces a huge
+  number of calculations, too.
+  \item There are also methods in the area of operation research discriped in
+  literature. An example of this methods is the Knappsack-algorithm. But the
+  biggest number of towns which is solved by this methods is under 50.
+\end{enumerate}
+To simplify the problem I assumed that between each town exists a road and the
+distances between the towns are constant\footnote{i.e. the distance between A and
+B is the same as the distance between B and A. In our normal life this is not
+nescessarily true.}.
+\section{Using Genetic Algorithms}
+Transforming the existing problem into a form suitable for genetic algorithms
+needs the definition of the two major components. These components are the individual
+and the fitness function.
+\subsection{Defining the Individuals}
+The first task by using genetic algorithms to solve the traveling salesman problem
+is to define the individual. By examining the problem it could be seen that the
+main subject of this problem is the route the salesman has to take. So I am looking for
+a representation of the route as a binary string.
+
+First I coded the towns as numbers, defining a function which projects a town
+on an integer. This is a basis to define a representation of the route. I can
+define the route as the order of the towns. For example the number chain '132'
+represents the route beginning at town no. 1 to town no. 3 and than going to
+town no. 2. Another route is represented by the number chain '312' or '231' and
+so on. As simply can be seen, each number can only be once in the string. If it
+would occure a second time the system would contains loops. By defining the individuals
+with a fixed length\footnote{In nature the DNA has a fixed length, too.} this
+also excludes some towns from the route.
+
+A special case is if the first town occurs in the string the second time. This
+is called a short circuit. The travel ends before all towns are visited because
+the salesman reaches his origin again.
+
+So using this method to code the route as an individual I transfer the number
+chain into a binary string. For this a transform each number of the chain into
+its binary representation is made. It has to be made sure, that the binary numbers
+have the same length, i.e. that they have the same number of digits. Writing
+the digits in the string forms the individual I am looking for.
+
+What makes the representation really difficult to use is the fact, that there
+are more individuals which represent forbidden routes than there are individuals
+which represent good and useful routes. As can be seen later in the experiments
+this problems will grow to a dimension which makes the system nearly useless.
+
+\subsection{Finding the Fitness-Function}
+The fitness function is not too complicate to find. The aim on this quest is to
+find the shortest route around all cities. So the first and best idea is that
+the driven distance is a direct measurement for the route. By following the route
+town by town a number of driven miles can be calculated. A route is better for the
+salesman if its milage is smaller than the milage of the other routes.
+
+So the problem in this specific exercise is not the fitness function but the representation
+of the individual.
+\section{Using the Package}
+Trying to use the SGA package shows very quick, that this package is not suitable.
+At several points I need the mechanisms of the advanced genetic algorithms :
+  \begin{itemize}
+  \item The individuals must not crossover at a randomly selected point. Doing
+  this would distroy the whole information of the string. Only at the ends of the
+  numbers is a crossover allowed.
+  \item The crossover also uses the haploid crossover mecahnism.
+  \item The mutation quote should be close to zero, any change of a single binary digit will
+  destroy the whole individual.
+  \end{itemize}
+By using these mechanisms it should possible to solve the problem. But after a
+few test runs it could be seen, that the number of bad individuals is huge and that
+after a few generations all individuals are dead. So it is necessary to install
+a repair algorithm, according to the section on handicapped individuals in the
+last chapter.
+
+The result of these {\bf Gedanken} is the following program.
+\subsubsection{Initialization of the Package}
+A generic package in Ada must be initalized before it can be used. The first
+step in the program is the using of most of the standart packages.
+\begin{verbatim}
+with Text_io;
+with iio; with fio;
+with Advanced_Genetic_Algorithms;
+
+procedure Traveling_Salesman is
+-- Number of Allele in the String : 8
+-- Population : 10 Strings
+-- Number of Points to cut the String : 7
+  package Genetic_Algorithms is new Advanced_Genetic_Algorithms(24,10,7);
+\end{verbatim}
+This line initializes the package for the {\tt Advanced\_Genetic\_Algorithms}.
+The three parameters of initialization are
+  \begin{enumerate}
+  \item - The size of the individual, in this case it is the number of towns times three.
+  I use eight towns for this demonstration, these can be coded by a three digit
+  binary number. So the size of a individual is $8 \times 3 = 24$ bits.
+  \item - The size of the population. This value is found by try and should be
+  changed during the experiments.
+  \item - The number of crossover points. I use eight towns, so there are $8 - 1 = 7$
+  crossover points.
+  \end{enumerate}
+\begin{verbatim}
+  use Genetic_Algorithms;
+  use Text_io; use iio; use fio;
+\end{verbatim}
+\subsubsection{Definition of the elementary variables}
+In the next lines I defined the nescessary variables and arrays. This is alway
+a task for the programmer, because he is the only one who knows the semantic
+contents the genetic algorithms are used in.
+\begin{verbatim}
+  No_of_Towns : constant integer := 8;
+  type Route  is array (1..No_of_Towns) of integer;
+  type Routes is array (1..80) of Route;
+\end{verbatim}
+The following declaration is the table to change a number to a town. For example
+the number 1 represents London, the number 8 represents Dover. Also the distances
+between the towns are defined in this program segment.
+\begin{verbatim}
+  Towns       : array (1..No_of_Towns) of string(1..10) :=
+    ("London    ",
+     "Edinburgh ",
+     "Cardiff   ",
+     "Newcastle ",
+     "York      ",
+     "Holyhead  ",
+     "Thurso    ",
+     "Dover     ");
+  Distance_Array : array (1..No_of_Towns,1..No_of_Towns) of integer :=
+   ((  0, 378, 159, 274, 193, 259, 651,  71),
+    (378,   0, 385, 110, 194, 308, 278, 449),
+    (159, 385,   0, 301, 240, 201, 650, 237),
+    (274, 110, 301,   0,  84, 247, 384, 345),
+    (193, 194, 240,  84,   0, 188, 462, 264),
+    (259, 308, 201, 247, 188,   0, 587, 339),
+    (651, 278, 650, 384, 462, 587,   0, 717),
+    ( 71, 449, 237, 345, 264, 339, 717,   0));
+\end{verbatim}
+The table of the distances are taken from \cite{Col91}. Are following declarations
+are standart and also used in the first example.
+\begin{verbatim}
+  Population     : Population_Array;
+  Fitness        : Fitness_Array;
+  Generation     : integer := 0;
+  best_Generation: integer := 0;
+  Value_Array    : Fitness_Array;
+  Calc_Array     : Fitness_Array;
+  Way            : Routes;
+  Mutation_Quote : float := 0.05;
+  Crossing_Dummy : Crossing_Points;
+  best_Way       : Route;
+  best_Value     : float := 99999.99;
+  Roulette       : boolean := false;
+\end{verbatim}
+\subsubsection{The Output}
+This first procedure is the output of the system, it shows the found routes of
+the system. To keep the program small I only installed a very rough procedure, in
+a real system the user interface should be more satisfying.
+\begin{verbatim}
+  procedure Show_Way (Way : in Route) is
+    begin
+    for t in 1..(Way'Last-1) loop
+      put(Towns(Way(t))); put(" --> ");
+      if ((t mod 4) = 0) then
+        new_line;
+        end if;
+      end loop;
+    put(Towns(Way(Way'Last)));
+    end Show_Way;
+\end{verbatim}
+The next procedure changes the binary string into the number chain which represents
+the route.
+\begin{verbatim}
+  procedure Change_String_to_Route (Genetic_String  : in     Individuum;
+                                    Transformed_Way : in out Route) is
+    x : integer := 1;
+    begin
+    for t in Transformed_Way'Range loop
+      Transformed_Way(t) := Genetic_String(x) * 4 + Genetic_String(x+1) * 2
+                                                  + Genetic_String(x+2) + 1;
+      x := x + 3;
+      end loop;
+    end Change_String_to_Route;
+\end{verbatim}
+\subsubsection{The Fitness Function}
+The following lines are the implementation of the fitness function. The fitness
+function also contains the repair function to produce handicapped individuals.
+Of course this way including the repair function is not a must, it can be done
+differently and will work as good as this one.
+\begin{verbatim}
+  procedure Check_Fitness(Population  : in out Population_Array;
+                          Way         : in out Routes;
+                          Calc_Array  : in out Fitness_Array;
+                          Fitness     : in out Fitness_Array) is
+    Sum_of_Fitness  : float := 0.0;
+    Sum_Distance    : float := 0.0;
+    Number_of_Knots : integer := 0;
+    Error_Coeff     : integer := 0;
+    Double          : integer := 0;
+\end{verbatim}
+This function calculates the distance the salesman has to travel following the
+route given into the function. If the route contains a short circuit the return
+value is of maximum size.
+\begin{verbatim}
+    function Distance (Way : in Route) return float is
+      Way_Gone     : float   := 0.0;
+      Short_Cycle  : boolean := false;
+      used_Towns   : array(1..No_of_Towns) of integer;
+      Acculum_Dist : integer := 0;
+      begin
+      for t in used_Towns'Range loop
+        used_Towns(t) := Way(t);
+        end loop;
+      for t in 1..(Way'Last-1) loop  -- former -1!
+        for x in used_Towns'Range loop
+          if ((used_Towns(x) = Way(t)) and (x /= t)) then
+            Short_Cycle := true;
+            Error_Coeff := Error_Coeff + 1;
+            Double      := t;
+            end if;
+          end loop;
+        used_Towns(t) := Way(t);
+        Acculum_Dist := Acculum_Dist + Distance_Array(Way(t),Way(t+1));
+        end loop;
+      if (Short_Cycle = true) then
+        return 99999.99;
+      else
+        return float(Acculum_Dist);
+        end if;
+      end Distance;
+\end{verbatim}
+The following procedure is the repair function. As can be seen, this function
+corrects every route which has less then two errors.
+\begin{verbatim}
+    procedure Repair(Element : in out Individuum; Way : in Route) is
+      missing      : integer := 0;
+      First_Allele : integer := 0;
+      in_it        : boolean := false;
+      begin
+      for t in 1..No_of_Towns loop
+        for x in 1..No_of_Towns loop
+          if (Way(x) = t) then
+            in_it := true;
+            end if;
+          end loop;
+        if (in_it = false) then
+          missing := t;
+          in_it := false;
+          end if;
+        end loop;
+      First_Allele := (Double * 3) - 2;
+      for t in First_Allele..(First_Allele+2) loop
+        Element(t) := missing / 2;
+        missing := missing mod 2;
+        end loop;
+      end Repair;
+\end{verbatim}
+The following procedure is the main part of the fitness function. It works as
+follows: First the binary string will be converted to a route. This route is
+checked and repaired if there exists a chance for this. After this a fitness
+is calculated.
+\begin{verbatim}
+    begin
+    for t in Population'Range loop
+      Change_String_to_Route (Population(t),Way(t));
+      Calc_Array(t) := Distance(Way(t));
+      if (Error_Coeff = 1) then
+        Repair(Population(t),Way(t));
+        Change_String_to_Route (Population(t),Way(t));
+        Calc_Array(t) := Distance(Way(t));
+        end if;
+      Error_Coeff := 0;
+\end{verbatim}
+If the individual is healthy it gets a distance of less than $99999.99$. Then
+the individual joins in the reproduction and the length of the route is added
+to the sum of distances.
+\begin{verbatim}
+      if (Calc_Array(t) /= 99999.99) then
+        Sum_Distance := Sum_Distance + Calc_Array(t);
+        end if;
+      end loop;
+\end{verbatim}
+If the individual could not be repaired it gets the fitness of 0.
+\begin{verbatim}
+    for t in Population'Range loop
+      if (Calc_Array(t) = 99999.99) then
+        Fitness(t) := 0.0;
+      else
+        Fitness(t) := (Calc_Array(t) / Sum_Distance) * 100.0;
+        end if;
+      end loop;
+    end Check_Fitness;
+\end{verbatim}
+\subsubsection{The Main Program}
+As can be seen the main program is very simple again. It starts with the elementary
+initialization of the population. This is done with the random number generator
+of the package. After this is done the program enters the loop as in the first
+example.
+
+Some more lines are included to the main structure to produce additional output
+and information for the user. This is a good hint for everybody who wants to program
+genetic algorithms himself. Additional informations are necessary to find were the
+problems in the genetic system occur.
+\begin{verbatim}
+  begin
+    Init_Population(Population);
+    best_Way := Way(1);
+    loop
+      Check_Fitness(Population, Way, Calc_Array, Fitness);
+      Generation := Generation + 1;
+      put("Generation : "); put(Generation); new_line;
+\end{verbatim}
+The next lines select the output: If a better route is found, it is remembered.
+\begin{verbatim}
+      for t in Population'Range loop
+        if (best_Value > Calc_Array(t)) then
+          best_Value := Calc_Array(t);
+          best_Way   := Way(t);
+          best_Generation := Generation;
+          end if;
+\end{verbatim}
+All practical routes are displayed. This lines should be cancelled if the displayed
+information hides the important information of the system.
+\begin{verbatim}
+        if (Fitness(t) > 0.0) then
+          Show_Way(Way(t)); put(integer(Calc_Array(t))); new_line;
+          end if;
+        end loop;
+\end{verbatim}
+The best route found so far is displayed, too.
+\begin{verbatim}
+      put("best Value : Generation : "); put(best_Generation); new_line;
+      Show_Way(best_Way); put(integer(best_Value)); new_line;
+\end{verbatim}
+If there are not enough individuals for the next generation, the roulette wheel
+reproduction is cancelled. This might be nescessary in some cases.
+\begin{verbatim}
+      Roulette := false;
+      for t in Fitness'Range loop
+        if (Fitness(t) > 0.0) then
+          Roulette := true;
+          end if;
+        end loop;
+      if (Roulette = true) then
+        Roulette_Wheel(Population,Fitness,0);
+        end if;
+\end{verbatim}
+The rest of the procedure look quite familiar.
+\begin{verbatim}
+      Crossover(Population,haploid,randomize,Crossing_Dummy,0,0);
+      Mutation(Population,Mutation_Quote,0);
+      end loop;
+  end Traveling_Salesman;
+\end{verbatim}
+\section{Additional Comments}
+This system is, of course, a very small one. But working with a bigger system
+would expand the code and would be very hard to understand, too. Surely not all
+problems could be solved with this package, there are problems which require
+a two dimensional system of genetic algorithms. Also there may be problems which
+require different procedures. Genetic algorithms are in the beginning of the
+use outside of the labors and the number of researched problems is not very
+big. Most discussed problems are of a very theoretical nature and a lot of the
+real world problems may look different.
+
+This procedure is a hint how such a system may look alike, as written above
+there is no rule how a genetic algorithms has to be.
+
+A full description of the interface to the different packages is in the appendix,
+as well as a full listing of all of the used packages.

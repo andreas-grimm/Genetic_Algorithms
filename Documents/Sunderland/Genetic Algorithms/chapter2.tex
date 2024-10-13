@@ -1,0 +1,282 @@
+Even there are not many mechanisms introduced in the system so far, the concept
+of simple genetic algorithms is very mighty. Almost all rational functions
+could be solved by using a SGA. Only functions with singularities will produce 
+some problems. Also the SGAs will work on many non-rational functions.
+
+In this chapter I want to demonstrate how a problem could be solved by using
+the SGA package. This package is an improved implementation of the basic system
+by Goldberg\cite{Gol89}.
+\section{The Problem}
+To demonstrate the work with a simple genetic algorithm I use the example of the
+last chapter. Simply I want to find the maximal value of the function
+$$y = x^2$$
+Of course by using common mathematics it is very simple to find this maximum.
+It will not need any computer program to show the behaviour of the curve and
+to illustrate the complete function.
+
+But it makes sense to use this function because it is well known and the results
+can be interpreted without any other help.
+
+As known, the function $y = x^2$ has no maximum, the limit $\lim_{x \to \infty} x^2$
+does not exist. It is necessary to reduce the size of $x$ artificially. The program
+may only check the integers on the interval $[0,2^{10}]$.
+
+The program has to find the maximum at $2^{10} = 1024$, this is the maximum value
+for this problem.
+
+This example is very suitable to define most of the other mathematical problems.
+The only changing the user has to make is in the definition of the mathematical
+function and depending on the mathematical function the search space and the
+fitness function. Also the function, which forms a number or a value out of the
+string must be changed, if this is needed.
+
+If a floating point number should be calculated, the string is divided in two
+parts, a mantisse and a exponent. Most of the fundamental books on computer 
+science show how a floating number is coded in a binary string.
+\section{Transforming the Problem}
+After the analysis of the problem there are two major problems to build the
+genetic algorithm. The first problem is the fitness function, i.e. the measure
+for the quality of the individuals. The second problem is the form and the size
+of the population and of the single individual. In the next subsections I try
+to explain which criterias are important by defining the fitness function and the
+population.
+\subsection{Defining the Fitness Function}
+Defining the fitness function is the most critical part using genetic algorithms.
+In the area of mathematical function this part is not so hard. But in most other
+cases even this is more difficult.
+The user of a genetic algorithm should think about
+\begin{itemize}
+  \item that the fitness function should be a injective relation from string
+to value.
+  \item that the fitness function should work in one direction only. Experiments
+in literature\cite{Gol89} show, that an optimization in more than in one direction
+causes problems, even if the problems look very simular.
+\end{itemize}
+In some cases it is necessary to redefine the fitness function, if e.g. the
+experiments show that the rate of optimization is not high enough.
+
+It is very important to say, that finding the fitness function is an empiric
+process. No place in the known literature gives an algorithm to form a fitness
+function out of a problem. Also there is not only an single fitness function
+for a problem, in most cases it is so that more then one fitness function fit
+in a problem. It is not proven, that a difference in a fitness function makes
+differences in the efficency of the process, but it is the most common opinion.
+
+I cannot give a special recipe to define a fitness function, too. But in the
+area of mathematical functions normally the function itself is used. In the
+forth chapter at page \pageref{chap4beg} I use a more difficult fitness function,
+trying to solve the traveling salesman problem.
+\subsection{Defining the Individuals}
+An other important problem using genetic algorithms is the question on the size
+of the population and the single individuals. I start with the single individual.
+\subsubsection{Size of the Individual}
+The size of the indvidual is a bijective projection between a number $lchrom$
+and the size of the interval $\cal{D}$, called the search space. On this way
+every element in the search space gets a representation as a string.
+
+Simply the interval in the exercise is the integer numbers $[0 , 2^{10}]$, so
+that the size of the interval is also $2^{10}$. By using the formula of the chapter
+before I define the length of the string $lchrom = 10$.
+
+The size of the individual would be different if the search space is not a set
+of integers but an interval of real or complex numbers. In this case another
+projection will be taken.
+\subsubsection{The Size of the Population}
+In difference to the size of the individuals there is no formula to calculate
+the size of the generation.
+
+An good empiric rule is that the size to the population should be the same than
+the size of the inidividual.
+
+Experiments have shown, that it is absolutly possible that this generation size
+is too small, so the information in the strings is not different enough. The
+information is too homogenous. This must no happen in the first phase. It may
+happen in the third phase, when the optimization is nearly finished. But if the
+generation is too homogenous, the number of inidividuals must be increased. The
+best size of the population should be found by a number of experiments. The user
+should think on the following : if the generation is too big the positive properties
+of genetic algorithm are lost. The golden rule of the generation size is
+\begin{quotation}
+''As big as necessary and as small as possible''
+\end{quotation}
+\section{Running the System}
+Before giving explainations on the following program I assume that the reader
+knows the syntax and the mechanisms of the programming language ADA. The following
+programs and packages are tested on at least three different platforms. These
+three platforms are
+\begin{enumerate}
+  \item an Unix System V Release 3.2 with a Meridian Ada Compiler,
+  \item an Apollo Workstation, and
+  \item an IBM PC under MS-Dos
+\end{enumerate}
+The following source code works in all cases without change. The source code
+will be commented line by line if necessary. It dependes on the theoretical
+view in the section above.
+\subsection{Requirements and Implementation of the SGA's}
+What is needed to program a genetic algorithm ? First there are satisfying data
+structures, i.e. data structures which represent the structures of the individuals
+and the population. As descripted before, the individual is nothing more but
+an array of the value 0 and 1, a binary string. A generation is an array of individuals.
+The package implementing the functions of genetic algorithms should provide
+these data structures.
+
+The package should also provide the three basic genetic functions of the reproduction
+of the individuals. For the use of these elementary genetic algorithms no more
+special functions from a library are needed.
+
+So does the package used in this example. It is a basic library with the elementary 
+data structures and functions, as descriped in the book of Goldberg\cite{Gol89}, 
+called {\tt simple\_genetic\_algorithms}. This is a improved portation of all
+the function invented by Goldberg, using the advanced mechanisms of Ada. The 
+library is a generic package, this means, that the size of the individual and 
+the size of the generation are kept variable.
+
+To use an Ada package it is important to know the header of this package. The
+header of the used package is the following :
+\begin{verbatim}
+with text_io; use text_io;
+with random; use random;
+with fio; use fio;
+with iio; use iio;
+
+generic
+\end{verbatim}
+{\footnotesize To be defined :\\
+MaxAllele = Numbers of Alleles in an Individuum\\
+MaxPopSize = Number of Individuums in a Population}
+\begin{verbatim}
+   MaxAllele            : integer;
+   MaxPopSize           : integer;
+
+package Simple_Genetic_Algorithms is
+\end{verbatim}
+{\footnotesize First definition of the most important types for genetic algorithms}
+\begin{verbatim}
+  type Individuum       is array (1..MaxAllele) of integer range 0..1;
+  type Population_Array is array (1..MaxPopSize) of Individuum;
+  type Fitness_Array    is array (1..MaxPopSize) of float;
+\end{verbatim}
+{\footnotesize Definition of the initialization of the population}
+\begin{verbatim}
+  procedure Init_Population (Population : in out Population_Array);
+\end{verbatim}
+{\footnotesize Definition of the elementary functions of SGAs}
+\begin{verbatim}
+  procedure Roulette_Wheel (Population : in out Population_Array;
+                            Fitness    : in     Fitness_Array);
+  procedure Crossover      (Population : in out Population_Array);
+  procedure Mutation       (Population : in out Population_Array;
+                            Mutationquote: in   float);
+  procedure Simple_Display(Generation : integer;
+                           Population : in Population_Array;
+                           Fitness    : in Fitness_Array;
+                           Org_Value  : in Fitness_Array;
+                           Calc_Value : in Fitness_Array);
+
+end Simple_Genetic_Algorithms;
+\end{verbatim}
+\subsection{Solving the Problem}
+By using the header above I generated the following program:\\
+\begin{verbatim}
+with Text_io;
+with simple_genetic_algorithms;
+\end{verbatim}
+{\footnotesize This first two lines of the implementation of the program adresses the standard
+text input-output library and the library for the genetic algorithm.}
+\begin{verbatim}
+procedure test_environ is
+  package Genetic_Algorithms is new simple_genetic_algorithms(10,10);
+  use Genetic_Algorithms;
+  use Text_io;
+\end{verbatim}
+{\footnotesize Before the genetic algorithm library can be used, it must be instantiated. The
+size of the individual is the first, the size of the population is the second
+parameter. Because of the reasons above, both parameters have the size of 10.
+{\bf Notice :} The size of the population must be a product of $2 \times n$.}
+\begin{verbatim}
+
+  Population    : Population_Array;
+  Fitness       : Fitness_Array;
+  Generation    : integer := 0;
+  Value_Array   : Fitness_Array;
+  Calc_Array    : Fitness_Array;
+\end{verbatim}
+{\footnotesize The variable {\tt Mutation\_Quote} is declared in the theoretical
+chapter and is need to discribe the probability to mutate.}
+\begin{verbatim}
+  Mutation_Quote : float := 0.005;
+\end{verbatim}
+The next function converts a string into an integer number. This is one of the
+exercises a programmer has to solve if he wants to use genetic algorithms: programming
+a function which forms a value for the fitness function from the binary string,
+commonly as individual.
+\begin{verbatim}
+    function Binary_to_Integer (Genetic_String : Individuum) return
+                   integer is
+      Number : integer := 0;
+      begin
+        Number := Genetic_String(1);
+        for t in 2..Genetic_String'Last loop
+          Number := Number + Genetic_String(t) * (2 ** (t - 1));
+        end loop;
+      return Number;
+      end Binary_to_Integer;
+\end{verbatim}
+This is the fitness function. As can be seen, this function does nothing more
+but to calculate a value for each member of the whole population. It also calculates
+the percentage of the fitness for each individual.
+\begin{verbatim}
+    procedure Check_Fitness (Population : in     Population_Array;
+                             Value_Array: in out Fitness_Array;
+                             Calc_Array : in out Fitness_Array;
+                             Fitness    : in out Fitness_Array) is
+      Sum_of_Fitness : float := 0.0;
+      begin
+        for t in Population'Range loop
+          Value_Array(t) := float(Binary_to_Integer(Population(t)));
+\end{verbatim}
+{\footnotesize The main fitness function as discribed in this chapter. By chaining
+this line it is possible to optimize another mathematical function or relation}
+\begin{verbatim}
+          Fitness(t) := float(integer(Value_Array(t)) ** 2);
+\end{verbatim}
+{\footnotesize The array {\tt Calc\_Array} is used in the simple display function
+of the package. If the user wants to program his own output, the following line
+is not used.}
+\begin{verbatim}
+          Calc_Array(t) := Fitness(t);
+          Sum_of_Fitness := Sum_of_Fitness + Fitness(t);
+        end loop;
+        if (Sum_of_Fitness <= 0.0) then
+          Sum_of_Fitness := 1.0;
+        end if;
+\end{verbatim}
+{\footnotesize Also the function calculates the percentage of single fitness
+values.}
+\begin{verbatim}
+        for t in Population'Range loop
+          Fitness(t) := (Fitness(t) / Sum_of_Fitness) * 100.0;
+        end loop;
+      end Check_Fitness;
+\end{verbatim}
+The following sequence is the main program. It consists of only a very few lines,
+initializing the population and running in the cycle of the genetic algorithm.
+\begin{verbatim}
+  begin
+  put_line ("Test Environment for Genetics Algorithms Library started");
+  Init_Population(Population);
+  put_line("Start of cyklus"); 
+  loop
+    Check_Fitness(Population,Value_Array,Calc_Array,Fitness);
+    Roulette_Wheel(Population,Fitness);
+    Crossover(Population);
+    Mutation(Population,Mutation_Quote);
+    Simple_Display(Generation,Population,Fitness,Value_Array,Calc_Array);
+    Generation := Generation + 1;
+  end loop;
+  end test_environ;
+\end{verbatim}
+The program solves the problem of the exercise. This is of course a very simple
+one. In the next chapter I introduce some mechanisms to solve more complicated
+problems which leads to a more intersting problem which is solved here. This
+problem will be the {\sc Traveling Salesman Problem}.

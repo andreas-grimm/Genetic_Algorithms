@@ -1,0 +1,154 @@
+\documentstyle[12pt]{article}
+\title{{Final Year Project\\
+Genetic Algorithms\\
+Final Presentation Handout}}
+\author{Andreas Grimm}
+\frenchspacing
+\def\bs{\char'134 } % backslash in \tt font.
+\pagestyle{headings}
+\parindent0em \parskip1.5ex plus0.5ex minus 0.5ex
+\renewcommand{\baselinestretch}{1.5}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\section{Objectives}
+The following objectives should be solved in my final year project:\marginpar{Folie :\\Objectives}
+\begin{enumerate}
+\item Constructing an experimental environment for users of Genetic Algorithms.\\
+Learning the use of Genetic Algorithms is very complicated for newcomers in this
+area. Aim in this project is the construction of a number of libraries which
+will help a potential user to construct genetic systems.
+\item The environment should be programmed in Ada.\\
+Basic idea is that the programming should be in an object orientated language which could be used
+by a greater number of users. The computer language, which is best known by the
+students and also most portable between different system is Ada. An alternative
+would be the language C++, but there are not enough platforms availiable.
+\item The packages should represent the different levels of Genetic Algorithms.\\
+A first package cover simple Genetic Algorithms as described by Goldberg\cite{Gol89}.
+The second package is an extension of the first also covering the advanced mechanims.
+A third package is the implementation for two dimensional individuals.
+\item The report should help a newcomer to learn the use of Genetic Algorithms.\\
+The report has two parts. The first part is a short introduction in the theory
+of Genetic Algorithms, the second part is a case study on an existing problem. 
+\end{enumerate}
+\section{Summary on Genetic Algorithms}
+A Genetic Algorithm is a special method of a non numerical optimization, using
+the mechanisms of the evolution to optimize variables of a given problem. Over
+the last millions and millions of years the nature proceeded an optimization
+of a system which is so complex that it would be even impossible to discribe it.
+
+The method of Genetic Algorithms was first used as a method to build models of\marginpar{Historie\\evtl. ausbauen}
+the behaviour of spezies in nature, after a certain time the interest changed.
+The first publication which reaches a greater audience was made by A.K.Dewdney\marginpar{evtl. zitieren}
+in the Scientific American, November 1985. But special papers were issued in
+the late 1960's by J.Holland at the University of Michigan, L.Fogel, A.Owens
+et al. The mechanisms used today where first mentioned on a conference at Carnegie-
+Mellon University in this time.
+
+But until today the method of Genetic Algorithms are almost unknown and only used
+in very specific problems. The best known area where these methods are in use
+is the optimization of neuronal networks, here special researches are made at
+the California Institute of Technology.
+
+Only a very few universities and polytechnics work in this area in Europe. The
+institutes I know are
+\begin{itemize}
+  \item the University of Nijmegen in the Netherlands. Here a team of scientists
+tries to identify the function of some genes in the human DNA with the help of
+Genetic Algorithms.
+  \item Dortmund University, working in the area of high speed processing of
+Genetic Algorithms with the help of transputers.
+  \item Cologne Polytechnic researching areas of practical use of Genetic Algorithms
+specially in the area machine learning and knowledge based systems.
+\end{itemize}
+As a fact, the mechanisms used in this field are well known, on the other hand
+there is no knowledge why the systems work in the way they actually work.\marginpar{Folie :\\Zyklus}
+
+Genetic Algorithms emulate the circle of life in nature. Individuals are born,\marginpar{ausbauen\\freihand\\evtl. 1.Kapitel}
+they have to prove themselves in an environment, they produce a new generation
+and they disappear. To make this process simpler the steps are made at one time,
+all individuals are born, they prove their fitness and they reproduce at the
+same time.
+
+The initial process of birth is done by a random number generator, which constructs
+the individuals by building strings or matrices of the numbers 0 and 1. These
+first individuals are checked and measured by a fitness function. This function
+returns a value for each individual, called the fitness. The fitness of the
+single individual is a direct measurement for the probability, that the single
+individual will reproduce its genetic material in the process to develop a new
+generation.
+
+The development of a new generation is done in three steps. The first step produces
+a basis material of strings. The material is choosen from the old generation,
+depending on the fitness and a random function. This combination is mentioned
+in literature as the roulette wheel selection. It means, that every inidividual
+gets a segment on a imaginary roulette wheel, the size of each segment depends
+on the fitness of each individual. By turning the roulette wheel $n$- times
+a number of inidividuals is choosen.\marginpar{Examples\\Goldberg ?}
+
+The second step is called the crossover. The individuals choosen before are
+paired, the genetic string is splitted at a random point and the information
+is crossed between the partners.
+
+The third and last step is the mutation, simulary to the mutation in nature.
+This is the change of genes without a special reason, just by random.
+
+The new developed generation is checked again and the process starts again. It
+runs over many generations and should be stopped by the user after a certain
+number of generations passed or a certain optimization is reached. This
+simple process is the basis of all further Genetic Algorithms and shown in figure
+\ref{figure1}. Of course by developing more complex problems the mechanisms
+must be changed, too.
+\begin{figure}
+  \unitlength1.0cm
+  \begin{picture}(15,15)
+  \end{picture}
+\caption[The Cycle of Genetic Algorithms]{The Cycle of Genetic Algorithms}
+\label{figure1}
+\end{figure}
+\section{Progress}
+The progress of the project is shown in figure \ref{figure2}. As can be seen,\marginpar{Folie :\\Progress}
+the development of the system starts in October '91 by sorting the sources and
+checking the ability of the language to support the development. Here at first
+two problems occured :
+\begin{enumerate}
+\item I had to learn the computer language in a very short time. Ada is teached
+in the third year, but it was necessary to start the programming before the lectures
+finished the lessons on Ada.
+\item By inspecting the language I saw, that the language does not support a
+random number generator. I solved this problem by porting the function from
+the language C, published in a book on numerical mathematics\cite{Pre89}.
+\end{enumerate}
+After these first preperation were finished I planned the modules until they\marginpar{Folie :\\Packages}
+had the form they have today. The implementation and testing was done from November
+'91 until mid January'92. Since then I write the report, which is expected to
+be finished at the end of this term.
+
+The packages will be available on three platforms :
+\begin{itemize}
+\item on the Apollo Workstations
+\item on MS-Dos Computers with an Ada compiler
+\item on Unix System V/3.2 with Meridian Ada compiler
+\end{itemize}
+
+The report is written with the \TeX \  wordprocessor, using the \LaTeX \  macro package.
+\begin{figure}
+  \unitlength1.0cm
+  \begin{picture}(15,15)
+  \end{picture}
+\caption[The progress of the project]{The progress of the project}
+\label{figure2}
+\end{figure}
+\begin{thebibliography}{99}
+\addtocontents{toc}{Bibliography}
+\bibitem[Gol89]{Gol89}D.E.Goldberg: Genetic Algorithms in Search,
+                      Optimization and Machine Learning\\
+                      Ann Arbor, 1989
+
+\bibitem[Pre89]{Pre89}W.H.Press, B.P.Flannery, et al.:Numerical Recipes\\
+                      The Art of Scientific Computing\\
+                      (C Version)\\
+                      Cambridge, 1989
+\end{thebibliography}
+\end{document}

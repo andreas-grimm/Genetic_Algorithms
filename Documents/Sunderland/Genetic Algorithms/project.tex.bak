@@ -1,0 +1,67 @@
+\documentstyle[titlepage]{report}
+%macropackage=lplaing
+
+\author{{\sc Andreas Grimm}\\
+{\small Dipl.-Inform., B.Sc.(Hons)}}
+
+\def\bs{\char'134 } % backslash in \tt font.
+\title{\sc Development of an Experimental
+           System for the use of\\
+           Genetic Algorithms}
+\frenchspacing
+\sloppy
+\date{\today}
+\pagestyle{headings}
+\parindent0em \parskip1.5ex plus0.5ex minus 0.5ex
+\renewcommand{\baselinestretch}{1.5}
+\begin{document}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{satz}{Satz}[chapter]
+\newtheorem{hypothese}{Hypothese}[chapter]
+\maketitle
+\begin{abstract}
+The following report is a reviewed verison of a report which I wrote in 1992 as a Project Report for the University of Sunderland. 
+It consists of five parts. The first part is a short introduction
+into the area of genetic algorithms. It shows the fundamentals of the theory
+of genetic algorithms and explains most of the terminology. Also a short example
+is given, so that the elementary work of the genetic algorithms is explained.
+The second chapter shows how the problem of the first chapter can be programmed.
+The third chapter expands the theory and try to explain certain mechanisms which
+are developed in the last years. An example of these advanced mechanisms is shown
+in the fourth chapter. The last part is an introduction into the area of two
+dimensional genetic algorithms and a short discussion of the possibilities for
+the use of these.
+
+The appendix gives a documentation for the used packages and introduces an
+optional random number generator, which could be used independently from this
+work.
+\end{abstract}
+\pagenumbering{Roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+\section{Introduction}
+\input introduc
+\section{Acknowledgements}
+At this part I want to thank my superviser, Dr. Peter Dunne for his support,
+especially for his help by writting this report.
+\chapter{The Basics of Genetic Algorithms}
+\input chapter1
+\chapter{Programming a SGA}
+\input chapter2
+\chapter{Advanced Genetic Algorithms}
+\input chapter3
+\chapter{Programming with AGA's}
+\input chapter4
+\chapter{Two Dimensional GAs}
+\input chapter5
+\begin{appendix}
+\chapter{The Package for the SGA}
+\input anhang_a
+\chapter{The Package for the AGA}
+\input anhang_b
+\chapter{The Random Number Generator}
+\input anhang_d
+\input bibgraph
+\end{appendix}
+\end {document}
