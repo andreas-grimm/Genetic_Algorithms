@@ -1,0 +1,348 @@
+This is the package for the use of simple genetic algorithms. It is absolutly
+different from the PASCAL program developed by Goldberg\cite{Gol89}. It tries
+to optimize the processes of the elements of genetic algorithms and also should
+be a skeleton for the development of other, more specific genetic algorithms.
+I assume that the mechanisms of the programming language ADA are known, so I
+do not explain the syntax of it.
+\section{The Header of the Package}
+The following program is the header of the package. To use the package a programmer
+only needs to know this part of it. Because it is so essential it is better
+documented than the body.
+\begin{verbatim}
+pragma LIST(ON);
+
+with text_io; use text_io;
+with random; use random;
+with float_io; use float_io;
+with integer_io; use integer_io;
+\end{verbatim}
+These first used package are part of standart ADA environment. It is possible,
+that in some implementations the names are different. I used the names of the
+ADA implementation for the Apollo workstations. The package {\tt random} is part
+of this report and not a standart of ADA.
+\begin{verbatim}
+generic
+\end{verbatim}
+The following parameters must be defined by instantiation of the package :
+\begin{itemize}
+  \item {\tt MaxAllele}: The number of genes\footnote{or alleles} in an individual
+  \item {\tt MaxPopSize}: The number of individuals in the population
+\end{itemize}
+\begin{verbatim}
+   MaxAllele            : integer;
+   MaxPopSize           : integer;
+
+package Simple_Genetic_Algorithms is
+\end{verbatim}
+The first definition in the package are the most important types for genetic
+algorithms. This type build the interface of the program and the SGA package.
+The used names find their equivalent in the book of Goldberg\cite{Gol89}.
+\begin{verbatim}
+  type Individuum       is array (1..MaxAllele) of integer range 0..1;
+  type Population_Array is array (1..MaxPopSize) of Individuum;
+  type Fitness_Array    is array (1..MaxPopSize) of float;
+\end{verbatim}
+The first function initializes the population. Because there is no special rule
+an individual has to be initialized the procedure can be handled as a black
+box, creating individuals without information how this is done.
+\begin{verbatim}
+  procedure Init_Population (Population : in out Population_Array);
+\end{verbatim}
+Next is the definition of the elementary functions of SGAs :
+  \begin{enumerate}
+  \item The roulette wheel,
+  \item the crossover and
+  \item the mutation.
+  \end{enumeration}
+First defined function is the {\tt roulette\_wheel}. This function produces
+the roulette wheel selection. Parameters of this function are :
+  \begin{itemize}
+  \item {\tt Population} is the sum of all individuals.
+  \item {\tt Fitness} is an array in which for all individuals is their specific
+  fitness.
+  \end{itemize}
+\begin{verbatim}
+  procedure Roulette_Wheel (Population : in out Population_Array;
+                            Fitness    : in     Fitness_Array);
+\end{verbatim}
+The procedure {\tt Crossover} works on the population and returns the new
+generation after the crossover step.
+\begin{verbatim}
+  procedure Crossover      (Population : in out Population_Array);
+\end{verbatim}
+The last of the three steps is the mutation. The procedure {\tt Mutation} is
+an implementation of this step. The parameters of this procedure is again the
+population and the quote of mutation, which is a floating point variable $< 1$.
+\begin{verbatim}
+  procedure Mutation       (Population : in out Population_Array;
+                            Mutationquote: in   float);
+\end{verbatim}
+The last procedure is a simple output procedure. This procedure can be replaced
+by the programmer without changing the core of the genetic algorithms. Its output
+is a tabular with four columns :
+  \begin{enumerate}
+  \item the individuals,
+  \item its percentage of fitness,
+  \item the integer value the individual does represent and
+  \item the result of the calculation done with the individual
+  \end{enumerate}
+\begin{verbatim}
+  procedure Simple_Display(Generation : integer;
+                           Population : in Population_Array;
+                           Fitness    : in Fitness_Array;
+                           Org_Value  : in Fitness_Array;
+                           Calc_Value : in Fitness_Array);
+
+end Simple_Genetic_Algorithms;
+\end{verbatim}
+This ends the header of this package.
+\section{The Body of the Package}
+The package body is normally closed as a secret. The mechanisms of ADA do not
+allow, that anybody can inspect the following lines or uses the variables defined
+inside.
+\begin{verbatim}
+package body Simple_Genetic_Algorithms is
+
+  Best_Org_Value        : float := 0.0;
+  Best_Calc_Value       : float := 0.0;
+  Best_Generation       : integer := 0;
+  Last_Gen_Accum_Org    : float := 0.0;
+  Last_Gen_Accum_Calc   : float := 0.0;
+\end{verbatim}
+\subsubsection{The Initialization of the Population}
+\begin{verbatim}
+  procedure Init_Population (Population : in out Population_Array) is
+    t, x                : integer;
+    Single_Individuum   : Individuum;
+  begin
+    for t in Population'Range loop
+      for x in Population(t)'Range loop
+        Single_Individuum(x) := random_ND_integer(65535) mod 2;
+        if (Single_Individuum(x) > 1) then
+          Single_Individuum(x) := 1;
+        end if;
+      end loop;
+      Population(t) := Single_Individuum;
+    end loop;
+  end Init_Population;
+\end{verbatim}
+\subsubsection{The Roulette Wheel Selection}
+As seen above the first procedure is the roulette wheel selection.
+\begin{verbatim}
+  procedure Roulette_Wheel (Population : in out Population_Array;
+                            Fitness    : in     Fitness_Array) is
+    New_Population : Population_Array;
+    Wheel_Length   : constant := 100;
+    Wheel          : array (1..Wheel_Length) of integer;
+    Position       : integer := 1;
+    t              : integer;
+    x              : integer;
+    field          : integer;
+
+  begin
+\end{verbatim}
+This is the initialization of the roulette wheel. Every individual gets
+fields according its fitness, which must be than better then 1 \% of the accumulated
+fitness in the system. The size of the roulette wheel will be less or equal
+100 fields.
+\begin{verbatim}
+    for t in Population'Range loop
+      if (Fitness(t) >= 1.0) then
+        for x in Position..(Position+integer(Fitness(t))) loop
+          if (x <= 100) then
+            Wheel(x):=t;
+          end if;
+        end loop;
+        Position := Position + integer(Fitness(t));
+      end if;
+    end loop;
+\end{verbatim}
+Start of the selection of the new generation.
+\begin{verbatim}
+    for t in Population'Range loop
+      field := 101;
+      while (field > 100) loop
+        field := (random_ND_integer(65535) mod Position) + 1;
+      end loop;
+      New_Population(t) := Population(Wheel(field));
+    end loop;
+\end{verbatim}
+Let the new generation take the place of the old one.
+\begin{verbatim}
+    for t in Population'Range loop
+      Population(t) := New_Population(t);
+    end loop;
+\end{verbatim}
+This finishes the procedure.
+\begin{verbatim}
+  end Roulette_Wheel;
+\end{verbatim}
+\subsubsection{The Crossover}
+The crossover is the longest and most difficult part of the package.
+\begin{verbatim}
+  procedure Crossover (Population : in out Population_Array) is
+    New_Population     : Population_Array;
+    Partner            : array (Population'Range) of integer;
+    x,y,z              : integer;
+    filled             : boolean;
+    Selected_Partner   : integer;
+    Point_of_Crossover : integer;
+    New_1st_Individuum : Individuum;
+    New_2nd_Individuum : Individuum;
+    Dummy              : Individuum;
+
+  begin
+\end{verbatim}
+First it is necessary to initialize the fields for the relationships. This fields are
+reserved for the information about the partners.
+\begin{verbatim}
+    for x in Partner'Range loop
+      Partner(x) := Population'Length + 1;
+    end loop;
+\end{verbatim}
+Each individual gets its partner.
+\begin{verbatim}
+    for x in 1..(Partner'Last / 2) loop
+      Selected_Partner := (random_ND_integer(65535) mod (Population'Length / 2))
+                           + (Population'Length / 2) + 1;
+      loop
+        filled := false;
+        for y in 1..x loop
+          if (Partner(y) = Selected_Partner) then
+            filled := true;
+            Selected_Partner :=(random_ND_integer(65535) mod (Population'Length
+                                / 2)) +(Population'Length / 2);
+            end if;
+          end loop;
+        exit when (filled = false);
+      end loop;
+      Partner(x) := Selected_Partner;
+    end loop;
+\end{verbatim}
+Now the partners are selected. Now the procedure finds the point of crossover
+for each pair and starts the change of the genetic information.
+\begin{verbatim}
+    for x in 1..(Partner'Last / 2) loop
+      New_1st_Individuum := Population(x);
+      New_2nd_Individuum := Population(Partner(x));
+      Point_of_Crossover := (random_ND_integer(65535) mod Population(x)'Length);
+      if (Point_of_Crossover > 0) then
+        Dummy := New_1st_Individuum;
+        for z in 1..Point_of_Crossover loop
+          New_1st_Individuum(z) := New_2nd_Individuum(z);
+          New_2nd_Individuum(z) := Dummy(z);
+        end loop;
+      end if;
+      Population(x) := New_1st_Individuum;
+      Population(Partner(x)) := New_2nd_Individuum;
+    end loop;
+  end Crossover;
+\end{verbatim}
+This ends this procedure. Important for all procedures is the fact that they
+work independent from the size of the individuals and the population.
+\subsubsection{The Mutation}
+The mutation is a very short and simple procedure. It has only to check, if there are
+any mutations and than choose the genes which must be changed.
+\begin{verbatim}
+  procedure Mutation       (Population : in out Population_Array;
+                            Mutationquote: in   float) is
+    Number_of_Mutations : integer;
+    Selected            : integer;
+    Point_of_Mutation   : integer;
+    Mutant              : Individuum;
+    Quote               : float;
+    Correction          : float;
+
+    begin
+      Quote := Mutationquote;
+\end{verbatim}
+If the mutation quote is too small or too big a message for the user is printed.
+The system also chooses a different medium quote.
+\begin{verbatim}
+      if (Mutationquote < 0.001) then
+        put_line("Quote of Mutation too small ! Assumed new quote : 0.005 ");
+        Quote := 0.005;
+      elsif (Mutationquote > 0.999) then
+        put_line("Quote of Mutation too big ! Assumed new quote : 0.005 ");
+        Quote := 0.005;
+      end if;
+\end{verbatim}
+The next step calculates the number of genes which have to mutate.
+\begin{verbatim}
+      Correction := 1000.0 / float(MaxPopSize);
+      Number_of_Mutations := integer(Quote * float(MaxPopSize) * Correction);
+\end{verbatim}
+If the number of mutations is greater then 0, the individuals and their genes
+are selected. Than the mutation is executed.
+\begin{verbatim}
+      if (Number_of_Mutations > 0) then
+        Number_of_Mutations := random_ND_integer(65535) mod Number_of_Mutations;
+      end if;
+      if (Number_of_Mutations > 0) then
+        for x in 1..Number_of_Mutations loop
+          Selected := (random_ND_integer(65535) mod Population'Length) + 1;
+          Point_of_Mutation := (random_ND_integer(65535) mod
+                                 Population(Selected)'Length) + 1;
+          Mutant := Population(Selected);
+          if (Mutant(Point_of_Mutation) = 0) then
+            Mutant(Point_of_Mutation) := 1;
+          else
+            Mutant(Point_of_Mutation) := 0;
+          end if;
+        Population(Selected) := Mutant;
+        end loop;
+      end if;
+    end Mutation;
+\end{verbatim}
+\subsubsection{The Display Function}
+The display function is not documentated.
+\begin{verbatim}
+  procedure Simple_Display(Generation : integer;
+                           Population : in Population_Array;
+                           Fitness    : in Fitness_Array;
+                           Org_Value  : in Fitness_Array;
+                           Calc_Value : in Fitness_Array) is
+  Single_Allele         : integer;
+  Element               : Individuum;
+  This_Gen_Accum_Org    : float;
+  This_Gen_Accum_Calc   : float;
+  Change_of_Accum_Calc  : float;
+
+  begin
+    new_page;
+    put ("Genetic Algorithms Experimental Environment: Simple Display ");
+    put_line ("Procedure");
+    new_line;
+    put ("Generation :");
+    put (Generation);
+    new_line;
+    for T in Population'Range loop
+      Element := Population(T);
+      for X in Element'Range loop
+        Single_Allele := Element(X);
+        put(Single_Allele,1);
+      end loop;
+    put(" | "); put(integer(Fitness(T)),4);
+    put(" | "); put(integer(Org_Value(T)),4);
+    This_Gen_Accum_Org := This_Gen_Accum_Org + Org_Value(T);
+    put(" | "); put(integer(Calc_Value(T)),4);
+    This_Gen_Accum_Calc := This_Gen_Accum_Calc + Calc_Value(T);
+    if (Best_Calc_Value < Calc_Value(T)) then
+      Best_Calc_Value := Calc_Value(T);
+      Best_Generation := Generation;
+    end if;
+    new_line;
+    end loop;
+    Change_of_Accum_Calc := This_Gen_Accum_Calc - Last_Gen_Accum_Calc;
+    put("Best Fitness :  "); put(integer(Best_Calc_Value));
+    put(" in Generation : "); put(Best_Generation); new_line;
+    put("Accum. Fitness: "); put(integer(This_Gen_Accum_Calc));
+    put(" Last Generation : "); put(integer(Last_Gen_Accum_Calc));
+    put(" Change : "); put(integer(Change_of_Accum_Calc)); new_line;
+    Last_Gen_Accum_Calc := This_Gen_Accum_Calc;
+  end Simple_Display;
+
+end Simple_Genetic_Algorithms;
+pragma LIST(OFF);
+\end{verbatim}
+

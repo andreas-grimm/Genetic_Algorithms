@@ -1,0 +1,546 @@
+The idea of Genetic Algorithms is not a very new one, it was developed
+over the last twenty years. But it was kept in darkness for a long time and
+became popular with the upcoming of the {\it Neuronal Networks}. In this chapter
+I want to declare the main principles of the theory of Genetic Algorithms. To
+understand every detail it would be the best to read the book of {\sc Goldberg}
+\cite{Gol89}. Some more experiences can be found in {\sc Davis}\cite{Dav91} and
+in the report of {\sc Prof. Jochum} at {\sc Cologne Polytechnic}\cite{Joc91}.\\
+In this paper I use different fonts for special purposes.
+\begin{itemize}
+  \item The 'small capital'- font is used for names of persons or institutes, e.g. {\sc Goldberg}.
+  \item The 'italic'- font is used for expression declared in a different part of
+        the report, e.g. {\it reproduction}.
+  \item The 'typewriter' - font is used for programs and computer outputs, e.g.
+        {\tt procedure Text is}.
+  \item References to the bibliography are enclosed in '$[$' and '$]$', e.g.
+        $[$Joc91$]$.
+\end{itemize}
+
+\section{What are {\it Genetic Algorithms} ?}
+Genetic Algorithms are a very unknown way in the development of programming
+complex processes. As can be seen by the name two very different sciences
+have influence in this area
+\begin{itemize}
+  \item the biology with the knowledge on evolutional processes, and
+  \item the computer science with the knowledge on algorithms and the development
+of algorithms on processes and natural environments. Development in this case
+means the formulation of the problems in procedings and data\cite{Wir85}.
+\end{itemize}
+The Science of the evolution and of the reproduction and selection of the best adapted
+lifeforms is known as genetic. So subject of the genetic algorithms are procedures
+with the property to change themselfs to fit into the environment.
+In this context we speak about changes of a specimen living in a form of environment
+with almost dangerous or unhealthy attributes.
+In real life it is impossible for a specimen to survive without this way of changing,
+therefor nature developed in millions of year mechanisms to optimize lifeforms,
+so that they fit into their environment. These mechanisms are in the detail very
+complicate, but it is possible to simplify them by abstraction so that they can
+be used in computer science.
+J.Holland developed this direction of computer science by trying  to adapt
+natural systems by the help of the computer. For him it was most important to
+develop systems which work alike the processes of the nature\cite{Gol89}.
+\subsection{A First Example}
+The following very nice example is given by A.K.Dewdney:
+\begin{quotation}
+Imagine an abstract sea inhabited by abstract organisms called
+finite living blobs, or flibs. Each flib is equipped with the simplest decisionmaking
+apparatus possible. This is the biological equivalent of what computer scientiests
+call a finite automaton. Each flib also containts a single chromosom consisting
+of a string of symbols that encodes the automaton. The flibs inhabit a primordial,
+digital soup in constant flux. These changes must be predicted accurately by the
+flib if it is to survive.
+
+In the primordial soup I recently set simmering in my computer, flibs that predicted
+poorly died out. The best predicted left progeny that sometimes improved on ancestral
+performance. Eventually a line of perfect predictors evolved.\cite{Dew85}
+\end{quotation}
+In this example are all the very important properties of the genetic algorithms:
+\begin{enumerate}
+  \item The individual, called the flip, which tries to adapted into the environment
+over generations of time
+  \item The environment or the civilisation pressure, which is the messure of
+of the fitness and of the ability to survive. In this example the civilisation
+pressure is the ability to make prognoses.
+\end{enumerate}
+It is now time to come a little closer to the subject. A very special interest
+of this first chapter is the summary of areas where genetic algorithms are used
+and to discribe the method of genetic algorithms in general.
+\subsection{Where are Genetic Algorithms useful ?}
+Genetic Algorithms were meanly in use in the area of optimization. Here it is not
+important which kind of optimization, numerical or non-numerical optimization
+should been solved.
+
+Many of the problems of numerical optimization can be solved by using programs
+of the area of numerical mathematics. As an example there is the algorithm of
+regula falsi and the algorithms of Newton\cite{Pre89}.
+
+By comparing one conventional algorithm (like given above) with a genetic algorithm
+it first looks like there is really no reason to use a new method like this one.
+Algorithms of the modern numerics are very efficent and, because they are specialized
+they are in many cases quicker then the genetic algorithm. The results are often
+better, which means that they are exacter. But they have no robustness as it is
+called by Goldberg\cite{Gol89}.
+
+Robustness is the ability to produce good results even when the environment is
+not made for this algorithm. What I call the environment is the problem, which
+should be solved by the algorithm. A bad environment has areas which do not
+fit to the rules given by the algorithm. This could be i.e. a point of discontinuity
+or more then one extremals, which are common in the area of numerical mathematics.
+
+As a example I want to use the algorithm of Newton to find the maximum of the
+function $f(x) = -x^2$, which is now the environment of the algorithm. This
+environment can be called positive, it has exactly one extremal (the point $0$)
+and by using the Newton algorithms we find this extremal very quick.
+
+But if this algorithms is started on a environment which can be called malicious
+it will
+  \begin{itemize}
+  \item not terminate, or
+  \item not find a greater number of the solutions
+  \end{itemize}
+A very good example is the sinus-function. This function has an infinity number
+of extremals and leads into a errorous situation for sure, because the number
+of unfound extremals is also infinity.
+
+Genetic Algorithms will not find all solutions to, but the probability to find
+more the one solution is proportial to the number of the individuals in the search.
+
+The following example is given by Goldberg\cite{Gol89}. Imagine a machine with five
+switches, each switch gives the values $0$ or $1$. Depending on the positions
+of the machine's switches the user will win a certain reward. So we are looking
+for the position of the switches with the highest reward.
+
+A normal solution of this problem would test all combination of the switches
+and remember all the results (or would remember the result with the highest
+reward). So there would be $2^5 = 32$ iterations of the program. As can be seen
+later a genetic algorithms normally uses much less iterations. I will keep
+this example in thenext chapters to descripe the fundamentals of the genetic
+algorithms.
+
+To characterise genetic algorithms in general:
+\begin{enumerate}
+  \item Genetic algorithms work with a code on a set of parameters, not with
+the parameters.
+  \item Genetic algorithms are searching with a set, a population and not with
+a single point.
+  \item Genetic algorithms check the results and do not use information from
+outside the system.
+  \item Genetic algorithms calculate the next points of search by the methods
+of probability theory, not by deterministic rules.
+\end{enumerate}
+\section{A Closer Look on Genetic Algorithms}
+For the understanding of the next parts of this report it is necessary to introduce
+a special terminology. This is most important even to keep the distance between
+the real world and the world build up in the computer.
+\begin{description}
+  \item[Individual] An Individual $\cal I$ is an element with at least one gene.
+This individual is definedand gets all it special properties by the gene. As a
+difference the biological term in this paper is individual.
+  \item[Gene] is a chain of symbols, most simply consisting on the symbols $0$
+and $1$. For the change of the chain there are three more, later defined operations:
+the reproduction, the crossover and the mutation. In some books the name chromosome
+is used, too. The number of genes in an individual is defined by the variable
+lchrom.
+  \item[Population] is the set of the existing individuals. If this number is to
+small the species will disappear or the algorithm will not find a good solution
+in a certain time. If the number is to big the time to calculate a single generation
+will grow and the system will not work sufficent. The size of the population
+will be called maxpop.
+  \item[Fitness] is the criterium to decide who good a single individual fits
+into the environment. The development of a proper fitnessfunction is necessary
+for the success of the genetic algorithm. Older experiment show that the development
+of a good fitnessfunction is the most difficult exercise in the area of genetic
+algorithms.
+  \end{description}
+With is definitions it is possible to have a closer look on the mechanism of
+genetic algorithms. A genetic algorithm uses four phases, the sequence of the
+algorithm is shown in the following graph:
+\unitlength1.0cm
+\begin{picture}(10,5)
+  \put(1.5,3.5){\circle{1.0}}
+  \put(3.0,1.5){\circle{1.0}}
+  \put(4.0,3.5){\circle{1.0}}
+  \put(5.0,1.5){\circle{1.0}}
+  \put(5.0,1.5){\circle{0.9}}
+  \put(2.0,3.5){\vector(1,0){1.5}}
+  \put(4.5,3.5){\vector(1,-3){0.5}}
+  \put(4.5,1.5){\vector(-1,0){1.0}}
+  \put(3.0,2.0){\vector(1,3){0.5}}
+  \put(1.5,4.0){Phase 1}
+  \put(4.5,4.0){Phase 2}
+  \put(5.5,1.0){Phase 3}
+  \put(1.0,1.0){Phase 4}
+\end{picture}
+\begin{description}
+\item[Phase 1]: The Start: The individuals are produced by a random number
+generator. This is called the initialisation of the system
+\item[Phase 2]: The Calculation: The individuals pass the function or the
+environment.
+\item[Phase 3]: The Control: Depending on the results of phase 2 the fitness
+of the individual is checked. This is the normal place for the algorithm to
+terminate.
+\item[Phase 4]: Change of Generations: In this phase new indivduums are developed.
+\end{description}
+\subsubsection{The Start}
+In this very first phase $n$ individuals {\cal I} will be created. Every individual
+$x$ is represented by it's genes, so that
+ $$x \in \{{\cal I} | x_k \in \{0,1\} for k = 1, 2, \dots, lchrom \}$$
+with $lchrom = \| x \|$.\\
+So an individual $x \in {\cal I}$ is generated by using a random number generator
+on every $x_k$. A special random number generator is defined in the appendix
+\footnote{There is no random number generator defined in Ada !}.
+
+It is important that the width\footnote{this is the number of bits used for 
+the generation of random number} of this generator is big enough. If it is 
+too small, like in some system developed generators, the system will not work 
+properly.
+
+Also the the sizes lchrom for the individuals and maxpop for the population
+must be defined. This variables must be changed, so they fit into the problem.
+Therefor it is necessary to get the size of the search-space, called $\cal D$.
+Then the number of genes is given by
+$$lchrom = \log_2(\| {\cal D} \| )$$
+The search-space must be a discret and countable. If it is not we have to find
+a transformation so that we can work with a discret set of numbers.
+
+There is no direct rule for the size of the population. It depents on the behaviour
+of the system and should be defined by doing some tests on the computer. The
+literature presents some formulas to calculate a population size but my experience
+in early experiments\cite{Gri91a,Gri91b} and also information of other sources
+\cite{Joc91} show that these formulas should be ignored.
+\subsubsection{The Calculation}
+The individual passes the environment, means the system calculates a special result
+for the specific individual. It is important the this result is not immediatly
+scored, this should take place in the next phase when all results are calculated.
+
+The environment should be seen as a mathematical function, therefor the result
+of the calculation is a characterisation of the individual. We have to discuss
+this part of the cyklus later.
+\subsubsection{The Control}
+This phase follows the phase of calculation. It could be connected with the
+change of generations but it is better to keep the phases seperated. The phase
+of control compares and scores the results of the individuals, so a ranking of
+the individuals can be made. The result is a direct scale for the fitness for
+each individual. Therefor the results of the population is added, the sum is 
+defined by
+$$F = \sum^{maxpop}_{k=1} f(x_k)$$
+where $f(x_k)$ is the result of the individual $x_k$. By using this value it is
+possible to calculate the value of fitness for each individual, which is
+defined by the formula
+$$f_p(x) = 100 \cdot \frac{f(x)}{F}$$
+Notice that Goldberg\cite{Gol89} uses a different formula, which gives nearly
+the same results.
+
+Also an interesting value is the difference between the calculated value $f(x)$
+and the expected value $\bar{f}$. The expected value is given by the average
+$$\bar{f} = \frac{F}{maxpop}$$
+With this formula it is possible to define the difference by
+$$\sigma(x) = | f(x) - \bar{f} |$$
+At this point it is necessary to think about the end of the iteration in the
+genetic algorithm. As could be seen above, the genetic algorithm runs in a circle
+which in nature will never stop\footnote{I hope so}. This point to stop could
+be
+\begin{itemize}
+  \item a certain value of optimization or
+  \item a certain number of generations
+\end{itemize}
+One border should be defined before starting the genetic algorithm. In some
+cases it is possible to define a certain result as a optimum. Then the reaching
+of this value should be the criteria to stop the genetic algorithm. If this
+is not possible a maximum number of generations should be defined. This criteria
+could be changed depending on the behaviour of the population. If there is no
+effect in increasing the fitness over a longer time the fitness function should
+be changed or modified. As a fact it is very difficult to find the right time
+to stop a genetic algorithm. I will give some hints later in the report.
+\subsubsection{Change of Generations}
+The next phase is the change of generations. This phase is the speciality of
+the genetic algorithms. There are three subphases in the evolution of the individuals:
+\begin{enumerate}
+  \item the reproduction of the individual, selecting a number of parents depending 
+on the fitness,
+  \item the cross-over, which means the exchange of genetic informations between
+to individuals, and
+  \item the mutation, a randomized change of genes.
+\end{enumerate}
+These phases are used under a number of specified rules.
+
+The first phase is the reproduction of the individuals. Imagine a roulette-wheel
+in the common sense. The control phase produced a fitness $f_p(x)$ value for each 
+individual. This value descripes the fitness of each individual as a part of
+the population.
+ 
+To take this value as direct measure for a segment on the wheel it is possible
+to calculate the size of the segment for each individual by the formula
+$${\cal P}(x) = f_p(x) \cdot 3.6$$
+Because turning an ideal roulette-wheel is a random experiment, like throwing
+an ideal dice, the calculation of the wheel's segment shows that the probability
+to pass the reproduction is proportional to the fitness of the individual. It
+is important to notice that a good fitness is not a ticket to the next generation,
+but only increases the changes to get one of the places to crossover and to
+mutate. Also a individual with a bad fitness can reach the next level, the changes
+are less. This effect is important if the differences between the individuals
+are small. Also a bad fitness does not mean that there are no important informations
+in the genes, they only could be hidden.
+
+The first step in the changing of the generations is to turn the roulette-wheel
+for each new individual needed. The wheel will stop on one segment which belongs
+to an old individual. This one will be transfered into the next generation. So in
+the next generation there could be more the one individual of the same type\footnote{
+with the same genetic structure}.
+
+The next step is called the cross-over. Here the surving individuals are randomly
+paired, this process could be called the marriage of the individuals. This pairs
+will exchange parts of their specific genes. Therefor the system will get a place
+in this string of genes. The string will be cutted and the parts will be exchanged.\\
+\\
+e.g. Given are the following strings:\\
+$A_1 = {\tt 01101010}$\\
+$A_2 = {\tt 11011011}$\\
+The random number generator gives position $p = 5$ for the exchange. So this
+place is marked:\\
+$A_1 = {\tt 01101|010}$\\
+$A_2 = {\tt 11011|011}$\\
+and after the cross-over:\\
+$A_1' = {\tt 01101011}$\\
+$A_2' = {\tt 11011010}$\\
+On this way the information between the generations is exchanged.
+
+The last step of this phase is the mutation. Here the idea is that some genes
+are changing without a normal reason from one generation to the next. Reasons
+in nature are i.e. radioactivity, influences of chemestry,\dots . Putting this 
+into a formula:
+$$ \forall x \in {\cal I} : x_i = \left\{ \begin{array}{r@{\quad:\quad}l}
+         \bar{x_i} & X=1\\ x_i & X=0 \end{array} \right. $$
+with are very small probability $P(X = 1)$. In Literature this probability is
+assumed $\ll 0.01$, in nature this value is much smaller\footnote{$\approx 0.000001$}.
+As a repeation: The effect of a mutation is a effect of nature and happens always
+with a very small probability. The change of genes in small populations, like
+here it is necessary to refresh the process of evolution.\\
+\\
+By using this rules a number of new individuals is generated and the cycle of
+calculating, controlling and changing the generation can start again. The special
+effect of the last phase is, that old information is stored, the system is learning
+\footnote{in biology there is the term of genetic learning} but also new information
+is generated, so that a probably better fitness\footnote{for a single individual
+or for the whole population} should be appear. The following bigger example should
+illustrate the work of a genetic algorithm.
+\section{Demonstration of a Genetic Algorithm}
+The following example is given in this form in the book by Goldberg\cite{Gol89}
+as a very elementary demonstration of genetic algorithms. One complete generation
+in the lifecycle of a population will be executed and the rules given above
+will be used.
+
+As an example the function $f(x) = x^2$ is used on the set ${\cal D} = [0,\dots,31]$.
+The algorithm should find the maximum of this function. This size of the set
+is $32$ elements, with the formula $lchrom = \log_2 (\| {\cal D} \|)$ we calculate
+that we need 5 genes in each individual, so $lchrom = 5$.
+
+Simply every gene $x_k$ is significant for one binary digit of the variable $x$, so
+that $x = x_k \cdot 2^k$. The fitness function is then defined by
+$$f(x) = (\sum_{k=0}^{5} x_k \cdot 2^k)^2$$
+\\
+Assuming the size of the population $maxpop$ is 4, the next step will be the
+generation of the basic population with the random number generator. This gives
+the following individuals:\\
+\\
+\begin{tabular}{c|c}
+Individual & Genetic Structure\\ \hline
+ 1 & 01101\\
+ 2 & 11000\\
+ 3 & 01000\\
+ 4 & 10011\\
+\end{tabular}
+\\
+\\
+As can be seen, the individuals are all different, in the population are no
+twins. The algorithms will now calculate the result of the function for each
+of the individuals. After proceding this step there is the following structure:\\
+\\
+\begin{tabular}{c|c|c}
+Individual & Value of $x$ & Value of $x^2$\\ \hline
+ 1 & 13 & 169\\
+ 2 & 24 & 576\\
+ 3 & 8 & 64 \\
+ 4 & 19 & 361\\
+\end{tabular}
+\\
+\\
+The next step is the control phase. Here the system additionaly calculates
+the values for $F$, $f_p(x)$, $\bar{f}$ and to find the maximal value in this 
+generation $f_{max}(x)$.
+The results are :\\
+\\
+\begin{tabular}{c|c}
+Parameter & Value \\ \hline
+$F$ & 1170 \\
+$\bar{f}$ & 293 \\
+$f_{max}(x)$ & 576 \\
+\end{tabular}
+\\
+\\
+The complete tabular looks as follows :\\
+\\
+\begin{tabular}{c|c|c|c|c|c}
+Individual & Genetic Structure & $x$-Value & $f(x)$ & $f_p (x)$ & $\sigma(x)$ \\ \hline
+ 1 & 01101 & 13 & 169 & 14 & 0.58\\
+ 2 & 11000 & 24 & 576 & 49 & 1.97\\
+ 3 & 01000 & 8  & 64  & 6  & 0.22\\
+ 4 & 10011 & 19 & 361 & 31 & 1.23\\
+\end{tabular}
+\\
+\\
+This result means:\\
+Individual $2$ has the best fitness with 49\% fitness. On the second and third 
+place are individuals $4$ and $1$ with 31\% and 14\% fitness. The last place
+has individual $3$ with 6\% fitness.
+With this results the system enters the next phase, called changing the generations.
+The first step in this phase is the reproduction. In this as in every following example
+I use the roulette-wheel selection by Goldberg\cite{Gol89}. The segments on the
+roulette-wheel are proportional to the percentage of the fitness. In this example
+four individuals are used, so the wheel must be turned four times. I assume that
+as a result I get individual $1$ once, individual $2$ twice and individual $4$
+once. Individual $3$ does not enter the next generation. The new tabular looks
+like this :\\
+\\
+\begin{tabular}{c|c}
+Individual & Genetic Structure \\ \hline
+ 1' & 01101 \\
+ 2' & 11000 \\
+ 3' & 11000 \\
+ 4' & 10011 \\
+\end{tabular}
+\\
+\\
+The second step in this phase is the crossover. By using random numbers the
+individuals are paired and the tabular looks like this:\\
+\begin{tabular}{c|c|c}
+Individual & Genetic Structure & Partner\\ \hline
+ 1' & 01101 & 2'\\
+ 2' & 11000 & 1'\\
+ 3' & 11000 & 4'\\
+ 4' & 10011 & 3'\\
+\end{tabular}
+\\
+\\
+Now the system has to calculate the point in the string where the string will
+be cutted and the information will be exchanged.
+For the first pair this point is after the fourth gene, for the second pair it
+is after the second gene. The results of the crossover can be seen at the next
+tabular:\\
+\\
+\begin{tabular}{c|c|c|c|c}
+Individual & Genetic Structure & Partner & Point of Crossover & new Individual\\ \hline
+ 1' & 01101 & 2' & 4 & 01100\\
+ 2' & 11000 & 1' & 4 & 11001\\
+ 3' & 11000 & 4' & 2 & 11011\\
+ 4' & 10011 & 3' & 2 & 10000\\
+\end{tabular}
+\\
+\\
+The next step would be the mutation. But by using a normal probability of mutation
+$p_{mut} = 0.001$ the number of mutations will be $\mu = 5 \cdot 4 \cdot 0,001 = 0,02$.
+So in this generation there is no mutation.
+
+With the next generation I recalculate the function :\\
+\\
+\begin{tabular}{c|c|c|c}
+Individual & Genetic Structure & Value $x$ & Value $x^2$\\ \hline
+ 1' & 01100 & 12 & 144\\
+ 2' & 11001 & 25 & 625\\
+ 3' & 11011 & 27 & 729\\
+ 4' & 10000 & 16 & 256\\
+\end{tabular}
+\\
+\\
+Comparing the two generations will give :\\
+\\
+\begin{tabular}{c|c|c|c}
+ & Generation 1 & Generation 2 & Change\\ \hline
+ Sum of Fitness $F$ & 1170 & 1754 & +49,91 \% \\
+ Average Fitness $\bar{f}$ & 293 & 439 & +49,82 \% \\
+ best value  $x$ & 576 & 729 & +26,56 \%\\
+\end{tabular}
+\\
+\\
+Which shows a improving of fitness in all sectors after the change of generations.
+There is an increase in the fitness of nearly $50$ \%.
+\section{The Results of a Genetic Algorithm}
+The mechanisms introduced so far are known as simple genetic algorithms. They only
+consist on the three basic mechanism by producing a new generation and no extra
+mechanisms in checking the fitness. These mechanisms are defined in chapter 3.
+
+There are three indicators which discripe the algorithm's behaviour. These
+indicators are
+\begin{enumerate}
+  \item the best fitness value,
+  \item the average fitness value, and
+  \item the worst fitness value.
+\end{enumerate}
+By ploting the values into a coordinate system generation by generation we get
+three curves. This curves look simular for all systems working with genetic algorithms
+and give a lot of information. In this section I will introduce this curves and
+show which informations could be taken from them.
+\subsubsection{The Curve of the Best Value}
+The first curve is the curve of the best values.
+\begin{figure}
+  \unitlength1.0cm
+  \begin{picture}(15,15)
+  \end{picture}
+\caption[The Curves of Genetic Algorithms]{The Curve of Genetic Algorithms}
+\label{CurveBestValue}
+\end{figure}
+As can be seen the curve first raises from the origin to a very good value,
+nearly to the optimum. After this it went back to a value which is good, but
+with a certain distance to the former optimum. After this it keeps swinging around
+a later balanced static point which is below the first reached optimum.
+
+The curve displayed has the ideal shape of the curve and in the most experiments
+the curve will look different. These different shapes are a result of the circumstances
+the genetic algorithm is used. In the chapter on advanced genetic algorithms
+are mechanisms to improved the performance of a genetic algorithm. But this
+tools have risks, too. Doing experiments with genetic algorithms is reading
+the curve and changing the system parameters.
+
+\begin{figure}
+  \unitlength1.0cm
+  \begin{picture}(15,15)
+  \end{picture}
+\caption[The Phases of the Curve]{The Phases of the Curve}
+\label{PhasesOfCurves}
+\end{figure}
+Therefor I introduce a scheme of three phases. These phases are typical and
+should be found in any curve produced by a genetic algorithm. A picture of the
+phases could be seen in figure \ref{PhasesOfCurves} on page \pageref{PhasesOfCurves}.
+The first phase starts with the first generation and stops with the reach of
+the first maximal. In a normal curve the size of the phase is between 10 to
+200 generations. The second phase starts with the end of the first and ends
+with the reach of the first minimal. The last phase starts at the end of the
+seconds and contains the whole swinging of the curve to the end of the experiment.
+
+\subsubsection{The Curve of the Average Value}
+This curve looks familiar to the curve of the best values. The difference is
+that every swing of the curve has a little delay and the values reached are
+not so high as the values of the first curve. The really imortant fact is the first one,
+that the shape of the curves are simular. This means that the population follows
+in the behaviour the best individual. If this does not happens this could have 
+only one reason. The programs and routines in the internal routines of the
+genetic algorithms are not implemented properly. The system should be checked
+on errors in the procedures of reproduction.
+
+For the same reason this curve should be continious. Otherwise a great number
+of individuals will change in one generation. By using the introduced mechanism
+this could only happen if the mutation quote is too high. Even at points of
+incontinuity in the curve of the best values this curve should remain at most
+in its behaviour.
+
+There is the possibility that the curve of the average value merges the curve
+of the best value. Than the whole population has become equal, there is no other
+individual then the one with the best value. In this case the genetic algorithms
+should terminate, there will be no more change in the behaviour and no more
+optimization.
+
+\subsubsection{The curve of the worst values}
+There is no special behaviour for this curve. Of course it will be under the
+average curve, but it could have a quite different shape. This curve is not
+important when simple genetic algorithms are used. It will be important later
+by using the advanced genetic algorithms.

@@ -1,0 +1,188 @@
+A very new development in the area of genetic algorithms is the introduction
+of two dimensional genetic algorithms. This chapter will show the reasons which
+leads to the development of these kind of algorithms and the way these are
+working. The last part of this chapter is a brief discription of a system developed
+to solve some problems with two dimensional genetic algorithms. The theory of
+genetic algorithms is not discussed in the public, so this chapter is a short
+discription of the research which is done so far.
+
+\section{The Theory of Two Dimensional Genetic Algorithms}
+The idea of the use of two dimensional genetic algorithms was born by trying
+to optimize a system where the subject of the optimization could easily be transformed
+into a matrix. But transforming this into a string looked quite more complicated.
+In this specific problem the task was to optimize a structure from the graph theory.
+
+As known a graph could be represented by a matrix, where a conection between
+the $m$th and the $n$ knot is represented by a '1' at the $m$th row and the
+$n$th column and a '1' at the $n$th row and the $m$th column of this matrix.
+This matrix is called the adjacenz matrix of the graph.
+
+This representation is very simple and has its fundaments in the mathematical
+graph theory. A different representation into a binary string will be much more
+complicated.
+
+If it is possible to prove the equivalence between an one dimensional and a two
+dimensional individual it should be possible to define the basic operations of
+genetic algorithms this way that they are suitable for two dimensions.
+
+\subsection{Equivalence between 1-D- and 2-D-Individuals}
+The equivalence between the two different types of individuals can easily be shown
+by defining a function which projects an arbitrary $m \times n$-matrix on a
+$k \times 1$-matrix. The size $k$ of the second matrix is clearly defined by
+the multiplication of $m$ and $n$ : $k = m \cdot n$.
+
+The second matrix can be interpreted as an binary string. This is exactly the
+form needed to work with genetic algorthms. If the dimensions of the matrix are
+fixed\footnote{as they are usually} the inversion is defined, too.
+
+So the first way of handling two-dimensional structures would be the following
+algorithm :
+\begin{enumerate}
+  \item check the fitness of the individual
+  \item transform the individual into a string
+  \item use the rules for selection, crossover and mutation as known
+  \item inverse the transformation
+  \item go to the first step
+\end{enumerate}
+This algorithm works properly, the only reason to think about another possibility
+is of philosophical nature.
+
+Is there a satisfactional reason to transform the two-dimensional individual ?
+And are there matrices where a transformation could destroy the structure of
+the individual ? By taking the example above it could be seen, that there cannot
+be any function to transform this individual which should be prefered to use.
+With other words: how should this transformation be made ? Is it nescessary to
+concat the rows of the matrix to construct the string, or should it be a concatination
+of the columns, or should it be a quite different function ?
+
+It is possible to pass this questions, if equivalent functions for selection,
+crossover and mutation can be found. There would not be any reason to think
+about this problems and the algorithms could be normally used.
+
+\subsection{Equivalence of the Operations}
+It is very simple to prove equivalence between the operations {\it selection},
+because it is not nescessary to define an operation different from the one-dimensional
+case. The structure of the individual is not important at this stage of the
+reproduction.
+
+There is no problem at the mutation, too. This operation only changes single
+genes. This is independent from the structure of the individual. Only the number
+of existing genes is important, so that an expansion to higher dimensions will
+not change the behaviour of this operation.
+
+A real difference can be found at the operation {\it crossover}.Here the structure
+of the individual is important and there has to be an expansion of the definition
+for one-dimensional individuals.
+
+A proper definition of the two dimensional crossover would be the following
+one :\\
+Additional to the point of crossover, which is an intersection of either the
+rows or the coloumns it is useful to define a second point which intersects the
+other dimension of the individual. By this it is possible to define a cut in
+the rows and the columns. The result of this is a matrix divided into four parts
+or quadrants. By exchanging the first and the third quadrant between the partners
+of the crossover it is possible to expand this operation to the new kind of
+individuals.
+
+Experiments with the new defined operations\cite{Gri91} show, that they are working
+and producing sufficent results.
+\section{Stability}
+A theoretical term I did not refer so far is the {\it stability} of a string.
+
+Fundamentically an individual is a binary string $A$, consisting of $k$ single
+elements $a_1$ to $a_k$. The order of these elements\footnote{or genes} is not
+important. To work with the operations of the genentic algorithms we need a full
+population. This population is called {\bf A}$(t)$, where $t$ is the index for
+the actual generation. Also a string $A'$ which is a part of the string $A$.
+This string $A'$ consists of $k'$ genes.
+
+Now the probability that the string $A'$ is distroyed while the crossover is
+$\frac{k' - 1}{k}$. The possibility that the point of crossover is outside of
+the string $A'$ is defined by the following formula
+$$p_{string} = \frac{(k-1)-(k'-1)}{k-1} + c = \frac{k - k' - 2}{k-1} + c$$
+(by \cite{Gol89}).
+Additionally it has to be calculated that the string $A'$ is distroyed by the
+mutation. This is the additional factor $c$ in the formula above. Explicit this
+factor $c$ is defined by
+$$c = (k - k') \cdot p_{mut}$$
+
+To calculate the same values for two dimensional individuals it is necessary to
+add a second part to this formula. The probability that a submatrix is distroyed
+by the reproduction is defined by
+$$p_{matrix} = p_{column} \cdot p_{row}$$
+
+A submatrix $M'$ is a $k' \times k''$-Matrix inside of the matrix $M$. Because
+the two points of crossover are selected randomally I can multiply the probabilities
+for each dimension. The full formula is now given by
+$$p_{matrix} = \(\frac{k - k' - 2}{k - 1} + (k - k') \cdot p_{mut}\) \cdot
+               \(\frac{k - k'' - 2}{k - 1} + (k - k'') \cdot p_{mut}\)$$
+
+Because both parts of this formula are always smaller then 1 it could be said
+that a submatrix of $n$ elements is more stabil then a substring of $n$ elements.
+
+\section{Demonstation of the Use of a 2D-GA}
+This last section shows, how a genetic algorithm is used to optimize a graph\cite{Gri91a}.
+Because the use of two dimensional individuals is new I do not have enough
+literature to refer to. The results presented here were made by doing own researches.
+The used package is documented in the appendix, it is mainly based on the AGA
+package.
+
+A graph is a mathematical structure. In this specific case it is represented
+by an adjacence matrix. This binary matrix is by definition a $n \ times n$
+matrix, where $n$ is the number of used knots in the graph. A definition of this
+matrix is given in the section above.
+
+A fitness function for graphs can be defined on many different ways. One of the
+possible fitness functions is the {\it average path length}. The {\it average
+path length} is a value which discripes the number of steps in a tree from the
+root of the tree to a certain knot.
+
+If the {\it average path length} is small a used search algorithms only needs
+a few steps to reach the wanted knot. A full description of the theory is given
+by {\sc Knuth}\cite{Knu68}.
+
+Expanding this definition for arbitrary graphs gave a very good fitness function
+and some experiments should show, how a graph will respond to this fitness function.
+
+The surprising result of the tests was, that commonly the graph developed a very
+compact structure so that the distance between single knots was very small.
+This development was done in only a few generations, a fitness close to ninety
+percent of the possible optimum was reached within 30 generations\footnote{based
+on the experimental environment, using between 20 and 200 knots}.
+
+The verify the results the experiments were repeated with a changed fitness
+function. This time a function was used which could be called a {\it cost function}.
+The function gives each possible connection between two knots a value. This value is
+called the {\it cost} of the connection. The accumulated costs of the system
+should be minimal.
+
+This problem is typical for a class of problems occuring in the field of operation
+research. It discripes the problem of finding the cheapest connection between
+$A$ and $B$, for example the cheapest transport between two towns.
+
+The results of the tests done here are simular to the results of the first
+test series. The shape of the resulting graph look different from the first
+one, it is not compact but more like line connecting the root to the edge with
+the cheapest path.
+
+Other experiments use 2D-GAs for indexing documents within an information retreival
+system\cite{Loe92}. Results here show again, that this way of using genetic algorithms
+work properly and produces quite good results.
+
+It is important to say that these experiments are not final results of a research
+with the aim to establish 2D-GAs into the theory, but single, summerized results.
+It is nescessary to define experiments which confirm these results.
+\section{Ideas for a further usage of 2D-GA}
+The results made by the very first experiments are not satisfactionary enough
+to think on serious use of this kind of genetic algorithms. But if the results
+are confirmed by others they could be used in a wide area of subjects.
+
+For example the optimization of neuronal networks can be done by using 2D-GAs.
+At the California Institute of Technologie (CALTECH) experiments are made to
+optimize those networks by genetic algorithms, but how these algorithms are
+programmed is not known now.
+
+A problem in the area of operations research is the transport of goods in a
+factory such that the costs are minimal. These systems are very complex and
+the algorithms to solve this problems are complicated. The time used to produce
+plans for the transport can be reduced by using genetic algorithms.

@@ -1,0 +1,218 @@
+In the first two chapters I had the focus on very simple problems, which do
+not come up with too many problems. The major problem in the area of genetic
+algorithms is that most of the problems are not so simple. So it is necessary to
+improve the mechanisms and to define some more additional functions.
+
+In this chapter I start with the most possible problems and show, how they are
+handled in the common literature.
+\section{Constraints}
+By using genetic algorithms at more complex problems, the system cannot provide
+a bijective relation between the search space and the binary string anymore.
+In this cases an injective relation is used. This means, that there exist strings
+without a representation in the search space.
+
+Of course, these strings must not enter the next generation. In other words,
+these strings have a fitness value of 0.
+
+This becomes complicated, if the number of zeroed individuals is so big, that
+the remaining population is too small to produce an new healthy generation. In
+this case the whole system is not properly working and there is no simple possibility
+to repair it. One very small chance to save the system is provided by the concept
+of the handicapped individuals, but if this does not work, the fitness function
+must be redefined.
+
+By defining more and more complex problems the probability of constraints destroying
+the system increases. So constraints should only be used with greatest caution.
+If possible, they should be always avoided.
+\section{The Method Of Fitness Scaling}
+The most familar effect in the use of genetic algorithms is that the optimization
+in the first phase in the run does not happens or is very slow. If this happens it
+could have two reasons.
+\begin{enumerate}
+  \item The problem is not suitable for genetic algorithms, or
+  \item The results of the individuals i.e. the fitness does not show big
+differences.
+\end{enumerate}
+It is very difficult to prove that a problem is not suitable, and this could
+not be said just after the first experiments. The second conclusion is more
+reasonable.
+
+If the difference of the fitness is not big enough, the programmer should spread
+up this difference artificially. This means, that the difference even between
+two individuals with nearly the same properties makes a difference in the reproduction.
+
+By this way it is possible to use genetic algorithms at problems were normally
+they would not work.
+
+\subsection{Spreading the Fitness}
+The method of fitness scaling is very simple, but also very effective. The first
+step is to substract the fitness of the worst individual from the fitness of
+the whole generation, i.e. from every single individual.
+
+Having done this, the generation now has a fitness between 0 and a certain $x$.
+But the difference between the individuals is as big as before. The next step
+is simply to multiply the fitness of the individuals by a fixed number. Now the
+difference is wide enough to find significant differences.
+
+By reinspecting the fitness the algorithm will find a possibility to select between
+the individuals, so that the optimization has a better change to work properly.
+\subsection{Using the Fitness Scaling}
+Because the problems with the fitness are common the fitness scaling is used
+very often. This means that the programmer of the genetic algorithm has to choose
+between two possibilities using this mechanism :
+\begin{enumerate}
+  \item Constantly - the fitness of the generation is always spreaded and checked.
+But this also has the result, that the user cannot check, if there is really
+an optimization.
+  \item Only if needed - so that if the difference between the single individuals
+is big enough, then there will no fitness scaling. This gives the user the possibility
+to check, if the optimization over the generations is really effective.
+\end{enumerate}
+Normally the second way of the fitness scaling is used. Only in some very extreme
+cases the first one will be choosen.
+\section{The Generation Gap}
+An unwanted effect in the use of genetic algorithms is the exist of phase 2 and
+phase 3 as shown in figure \ref{PhasesOfCurves}. A very proper behaviour of the 
+curves would be, if they stay up and
+do not swing on a lower level. For the curve of the best values this is very easy
+to realize. But the method has no parallel in the world of nature.
+
+The simplest method would be not to destroy the best individuum in the next
+cycle. Even if this will slow down the speed of optimization it also keep the
+best individuals alive. The way doing this is to reduce the number of the new
+individuals in the next generation by the size of the generation gap. The spare
+space in the next generation is filled by the best individuals of the present
+generation. The size of the gap is keeped variable, so that it can be changed
+in the experiments. But it should not be greater then a third of the generations
+size. Otherwise it is to dominant and the reproduction of generation does not
+have a proper effect. Best results alway occur, when the size of the gap is
+small, in the area of one to three individuals. By using the size like this,
+there is still the effect of the generation gap, but the slow down of the
+optimization is not to big.
+
+The slow down of the optimization happens, because the genetic material of the
+best individuals does not join the generation of the best generation. This means,
+that the curve of the best individual does not go down, but also that the rest
+of the population must produce a better individual to replace the present gap.
+At the end of phase one this becomes more and more difficult and after the end
+of phase one normally only a mutation does change the gap.
+
+A better way of the gap is also to eliminate the individual with the worst fitness
+and replace it with the individual with the best fitness. On this way it is
+possible to keep the best individual alive and also to bring the genetic material
+in the circle of reproduction.
+\begin{figure}
+  \unitlength1.0cm
+  \begin{picture}(15,15)
+  \end{picture}
+\caption[The Effect of the Generation Gap]{The Effect of the Generation Gap}
+\label{GenerationGap}
+\end{figure}
+Then the effect of the gap is reduced on the best individual and the rest of
+the population can work on as it would do without the generation gap.
+\section{Fixed Point Crossover}
+Some problems works with values, which can't be simply transformed into a binary
+string. These problems are not suitable for a simple genetic algorithm. So a
+mechanism must be developed to work with these problems.
+
+This mechanism is called fixed point crossover. This means, that the crossover
+will not take place at a randomly selected point, but at some predefined single
+points in the string.
+These points do not necessary be in a specific order. They only must to be defined
+by the exercise to be solved with the genetic algorithm.
+
+This mechanism helps to put binary digits together to integer numbers, so that
+also strings of integer numbers can be used within genetic algorithms.
+
+By defining methods for the algorithms it is important to see, if there is a
+equivalent in nature. This mechanism has such an equivalent. A natural genetic
+string consists of more than to bases, i.e. a human genetic string consists
+of four different bases. This means, that we do not have a binary system. The
+single bases do not change in the crossover. The only thing happens is, that they
+are recombined in a different order.
+
+To simulate this the string in the computer must not be cut at a randomly defined
+point. Only every second point in the string may be used for the crossover. So
+the paired genes of the string form an integer value from 0 to 3, which could
+be an equivalent to the four bases in nature.
+
+As far as known, this mechanism is invented by the dutch scientist Lucansius\cite{Luc91}
+which made experiments to analyse to human DNA with the help of genetic algorithms.
+Even these kind of systems are not very common, it is good to notify that a
+solution to these problems is possible and approved.
+\section{The Handicapped Individual}
+A big problem by the use of genetic algorithms is when the defined constraints
+are too tough. Then the next generation does not contain enough surviving individuals
+to produce a healthy population. Mostly the genetic algorithms stop, because
+the is insufficent genetic material to generate even a new generation.
+
+Another reason to keep these individuals is the possibility that the information
+provided in this individual is very important and only a little defect makes
+this special individual sort out off the population.
+
+These effect occurs very often. When it is not possible to redefine the fitnessfunction
+the user has to find an other way to keep the system running. A method to do
+this is the method of the handicapped individual\cite{Gri91b}. First experiments
+with a good result are made by Jochum et al\cite{Joc91}.
+
+Individuals, which are sorted out are called {\bf Totgeburten}. These {\bf Totgeburten}
+could even provide important informations, which should not get lost. So by
+changing the behaviour of the constraints it is possible to keep the individual
+in the population. As a fact, the method does not change the constraint but the
+individual. This changed individual is called a handicapped individual.
+
+\begin{definition}[A Handicapped Individual] is a {\bf Totgeburten}, which can
+stay in the population if there exist a correct individual, so that the distance
+between these individuals is not greater then a certain number and a function,
+which transforms the {\bf Totgeburten} to the correct individual.
+\end{definition}
+
+This definition can help to define a correcting function. To define this function
+it is necessary to define the distance between two individuals. I used this
+distance in the definition above.
+
+\begin{definition}[The Distance] of two individuals is defined by
+$$x,y \in {\cal I}: x \ominus y : \sum_{i = 1}^{lchrom} | x_i - y_i | $$
+\end{definition}
+With this it is possible to define the correcting function:
+\begin{definition}[The Correcting Function] is defined by
+$$k({\cal I}): \forall x: x \notin {\cal I} \to x' \in {\cal I}$$
+and also the following condition must be satisfied:
+$$x' \ominus x \Longrightarrow min$$
+\end{definition}
+
+Additionaly there is a value $\xi$ which defines a cut. A individual with more
+malicious informations than this number $\xi$ must not be repaired.
+\subsection{Differences To The Normal Constraints}
+Normal constraints are normally destructive, they eliminate individuals if they
+do not fit in the environment. This does not happens in nature, in which there
+are handicapped individuals at all. The problem of these handicapped individuals
+is that they have a lot of problems to survive.
+
+If they do it, they are very tough and have a quite good genetic material. This
+genetic material could be necessary to keep the whole species alive. So the
+concept of handicapped individuals is quite close to nature and experiments
+\cite{Joc91} have shown, that genetic algorithms work more properly if the
+constraints are replaced by the concept of handicapped individuals.
+\section{Diploid and Haploid Crossover}
+In nature there are two different possibilities of exchanging information between
+two generations. In the chapters before I discribed a simple mechanism of cutting
+the string with the genetic information and exchanging the parts. This is called
+a halpoid crossover, according to the term in biology. But there is a different
+way to generate new information.
+
+This way is called the diploid crossover. It works simular to the way a crossover
+with the DNA is done. The genetic string of both individuals are melting together
+to a new string and then this new string doubles to build the information of
+both new individuals.
+
+This looks more like the way nature does the crossover, but in the area of genetic
+algorithms this is not very much in use. The problem of this system is, that
+it makes the whole genetic algorithm very complicated.
+
+Another danger of this crossover is that the number of different individuals is
+artificially decreased. The programmer should be very carefully to use this
+mechanism.
+
+Because of the habits of this method I like to advice the user to consult the
+book of Goldberg\cite{Gol89} before installing this procedure into his program.
